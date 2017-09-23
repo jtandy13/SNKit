@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./resources/bootstrap.min.css">
+    <style>
+      .customNav{
+        padding-top: 15px;
+        padding-bottom: 15px;
+      }
+      /*.gridDebug{
+        border: solid red 1px;
+      }*/
+      .searchBar{
+        margin-top: 15px;
+      }
+      .selectedField{
+        background: #e6e6e6;
+        border-color: #881391;
+        box-shadow: 0px 0px 4px #881391;
+      }
+      .fields:hover{
+        cursor: pointer;
+        background-color: #e6e6e6;
+        border-color: #881391;
+      }
+      .propertyKey{
+        color: #881391;
+      }
+      .widgetList{
+        color: #881391;
+        padding-left: 15px;
+      }
+      .widgetBox{
+        border-radius: 10px;
+        padding: 5px;
+      }
+      .widgetBox:hover{
+        cursor: pointer;
+        background-color: #f3f3f3;
+        box-shadow: 0px 0px 4px #881391;
+      }
+      .widgetListItem:hover{
+        cursor: pointer;
+        border: #881391;
+      }
+      .propertyValue{
+        color: #c41a16;
+      }
+      .instructionImage{
+        box-shadow: 0px 0px 20px #888;
+        margin-bottom: 40px;
+      }
+    </style>
+  </head>
+<body>
+  <!-- Begin nav tabs -->
+  <div class="container-fluid customNav">
+    <div class="row">
+      <div class="gridDebug col-md-12">
+        <ul class="nav nav-tabs">
+          <li class="active"><a data-toggle="tab" href="#formFields">Form Fields</a></li>
+          <li><a data-toggle="tab" href="#servicePortalTab">Service Portal</a></li>
+          <li><a data-toggle="tab" href="#menu2">Help</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- End nav tabs -->
+  <!-- Begin Form Analyzer -->
+  <div class="tab-content">
+    <div class="tab-pane active" id="formFields" role="tabpanel">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="gridDebug col-md-2">
+            <div class="btn-group-vertical" role="group" aria-label="...">
+              <button id="clearValueBtn" class="btn btn-default">Clear Value</button>
+              <div class="btn-group">
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Disable/Enable Field <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><a href="#" id="disableFieldBtn">Disable field</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="#" id="enableFieldBtn">Enable field</a></li>
+                </ul>
+              </div>
+              <div class="btn-group">
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Set/Remove Mandatory <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><a href="#" id="setMandatoryBtn">Set mandatory</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="#" id="removeMandatoryBtn">Remove mandatory</a></li>
+                </ul>
+              </div>
+              <div class="btn-group">
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Show/Hide Field(s) <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><a href="#" id="showFieldBtn">Show field</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="#" id="hideFieldBtn">Hide field</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="#" id="showAllHiddenFieldsBtn">Show all hidden fields</a></li>
+                </ul>
+              </div>
+              <button id="showReferenceBtn" class="btn btn-default">Evaluate reference in console</button>
+            </div>
+          </div>
+          <div class="gridDebug col-md-4">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="gridDebug col-xs-2">
+                  <h3><strong><em>Fields</em></strong></h3>
+                </div>
+                <div class="gridDebug col-xs-2"></div>
+                <div class="gridDebug col-xs-8">
+                  <div class="input-group searchBar">
+                    <input type="text" class="form-control" id="searchText" placeholder="Search for...">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="button" id="fieldSearchBtn">Go!</button>
+                  </span>
+                  </div>
+                  <!-- /input-group -->
+                </div>
+              </div>
+            </div>
+            <div id="fieldsList"></div>
+          </div>
+          <div class="gridDebug col-md-4">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="gridDebug col-xs-2">
+                  <h3><strong><em>Variables</em></strong></h3>
+                </div>
+                <div class="gridDebug col-xs-2"></div>
+                <div class="gridDebug col-xs-8">
+                  <div class="input-group searchBar">
+                    <input type="text" class="form-control" id="searchText" placeholder="Search for...">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="button" id="variableSearchBtn">Go!</button>
+                    </span>
+                  </div>
+                  <!-- /input-group -->
+                </div>
+              </div>
+            </div>
+            <div id="variablesList"></div>
+          </div>
+          <div class="gridDebug col-md-2">
+          </div>
+        </div>
+      </div>
+    </div> <!-- End Form Analyzer -->
+    <!-- Begin Service Portal -->
+    <div class="tab-pane" id="servicePortalTab" role="tabpanel">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="panel panel-default" id="controllerList">
+                  <div class="panel-body">
+                    <h3><strong><em>Widget Scopes</em></strong></h3>
+                    <p>SNKit has logged all Service Portal widget AngularJS scope objects to the <em>Service Portal Widget Scopes</em> 
+                      sidebar of the Elements panel.</p>
+                    <br>
+                    <p><strong>1. Open the Elements panel at the top of the devtools window.</strong></p>
+                    <img class="instructionImage" src="./resources/images/elementsPanel.jpg"> 
+                    <p><strong>2. From the sidebar panels, locate the <em>Service Portal Widget Scopes</em> panel. You may need to show all sidebar
+                      panels with the arrow button.</strong>
+                    </p>
+                    <img class="instructionImage" src="./resources/images/sidebarPanel.jpg"> 
+                    <p><strong>3. Expand each widget to view the scope data.</strong>
+                    </p>
+                    <img class="instructionImage" src="./resources/images/widgetList.jpg">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="panel panel-default" id="pageDetails">
+                  <div class="panel-body">
+                    <h3><strong><em>Widget Controllers</em></strong></h3>
+                    <p>Click on any Service Portal widget listed below to view and/or edit the AngularJS controller from devtools.
+                      Saved changes to the controllers for testing and/or debugging will not change or affect the widget record in the ServiceNow
+                      instance.
+                    </p>
+                    <p>Change to <em>Inspect mode</em> to instead be taken to the top HTML element of the widget.</p>
+                    <div id="widgetsList"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="./resources/jquery-3.2.1.min.js"></script>
+  <script src="./resources/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "name": "SNKit",
+  "version": "0.0.0",
+  "description": "Extends the chrome devtools by adding functions relevant to ServiceNow.",
+  "devtools_page": "devtools.html",
+  "manifest_version": 2,
+  "permissions": [
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.service-now.com/*"
+      ],
+      "js": [
+        "content_script.js"
+      ],
+      "css": [
+        "snkitAnimations.css"
+      ]
+    }
+  ],
+  "background": {
+    "scripts": [
+      "eventPage.js"
+    ],
+    "persistent": false
+  },
+  "web_accessible_resources": [
+    "snkit.js"
+  ]
+}
