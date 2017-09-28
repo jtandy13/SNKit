@@ -247,6 +247,50 @@ function getWidgetDetails(callback) {
   callback(details);
 }
 
+function showUiPolicies(fieldName, callback) {
+  var targetWindow = getTargetWindow()
+  var uiPolicyArray = targetWindow.g_ui_policy;
+  var targetPolicies = [];
+  uiPolicyArray.forEach((policy) => {
+    policy.actions.forEach((action) => {
+      if (action.name == fieldName){
+        var policyDetailObj = {};
+        policyDetailObj.name = policy.short_description;
+        policyDetailObj.url = `https://${targetWindow.location.hostname}/${policy.table}.do?sys_id=${policy.sys_id}`;
+        targetPolicies.push(policyDetailObj);
+      }
+    })
+  })
+  callback(targetPolicies);
+}
+//TODO: convert to client script collection. Gather client script type as well
+function showClientScripts(fieldName, callback) {
+  var targetWindow = getTargetWindow()
+  var clientScriptsObj = targetWindow.g_event_handler_ids;
+  var targetClientScripts = [];
+  var promises = [];
+    for (var prop in clientScriptsObj) {
+      var gr = new targetWindow.GlideRecord("sys_script_client");
+      gr.addQuery("sys_id", clientScriptsObj[prop]);
+      promises.push(new Promise((resolve, reject) => {
+        gr.query(function (rec) {
+          rec.next();
+          if (rec.script.search(fieldName) != -1) {
+            var scriptDetailObj = {};
+            scriptDetailObj.name = rec.sys_name;
+            scriptDetailObj.type = rec.type;
+            scriptDetailObj.url = `https://${targetWindow.location.hostname}/sys_script_client.do?sys_id=${rec.sys_id}`;
+            targetClientScripts.push(scriptDetailObj);
+          }
+          resolve();
+        });
+      }));
+    }
+  Promise.all(promises).then(() => {callback(targetClientScripts)});
+  /*console.log(targetClientScripts);
+  callback(targetClientScripts);*/
+}
+
 window.addEventListener("myCmdEvent", function(event) {
   var cmd = event.detail.cmd;
   var cmdData = event.detail.cmdData;
@@ -282,6 +326,16 @@ window.addEventListener("myCmdEvent", function(event) {
     })
   } else if (cmd === "getWidgetDetails"){
     getWidgetDetails((data) => {
+      // send the data back to the content script
+      window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
+    });
+  } else if (cmd === "showUiPolicies"){
+    showUiPolicies(cmdData.fieldName, (data) => {
+      // send the data back to the content script
+      window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
+    });
+  } else if (cmd === "showClientScripts"){
+    showClientScripts(cmdData.fieldName, (data) => {
       // send the data back to the content script
       window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
     });

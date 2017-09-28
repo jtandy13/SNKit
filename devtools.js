@@ -97,6 +97,12 @@ var widgetUtil = (() => {
   }
 })();
 
+function createNewIssue(){
+  // Create a port for communication with the event page
+  var port = chrome.runtime.connect({ name: "devtools-page" });
+  port.postMessage({ tabId: "", text: "createNewIssue", cmdType: "event_page", data: {} });
+}
+
 var formUtil = (() => {
   return {
     getFieldProperties: () => {
@@ -207,6 +213,36 @@ var formUtil = (() => {
         });
       });
     },
+    showUiPolicies: (fieldName) => {
+      // Create a port for communication with the event page
+      var port = chrome.runtime.connect({name: "devtools-page"});
+      return new Promise((resolve, reject) => {
+        port.postMessage({ tabId: getTabId(), text: "showUiPolicies", cmdType: "page", data: {fieldName: fieldName} });
+        port.onMessage.addListener((data) => {
+          if(data.type == "EVENT_PAGE" && data.cmd == "showUiPolicies"){
+            console.log("showUiPolicies port.disconnect()");
+            port.disconnect();
+            if(data.content) resolve(data.content);
+            else reject();
+          }
+        });
+      });
+    },
+    showClientScripts: (fieldName) => {
+      // Create a port for communication with the event page
+      var port = chrome.runtime.connect({name: "devtools-page"});
+      return new Promise((resolve, reject) => {
+        port.postMessage({ tabId: getTabId(), text: "showClientScripts", cmdType: "page", data: {fieldName: fieldName} });
+        port.onMessage.addListener((data) => {
+          if(data.type == "EVENT_PAGE" && data.cmd == "showClientScripts"){
+            console.log("showClientScripts port.disconnect()");
+            port.disconnect();
+            if(data.content) resolve(data.content);
+            else reject();
+          }
+        });
+      });
+    }
   }
 })();
 
@@ -439,6 +475,45 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         });
       }
 
+      function renderUiPolicies(selectedFieldName, policies){
+        var uiPoliciesTab = _spPanelWindow.document.getElementById("uiPoliciesSelector");
+        uiPoliciesTab.style.display = "block";
+        console.log(policies)
+
+        var targetEl = _spPanelWindow.document.getElementById("policiesList");
+        var policiesHTML = `<h3><strong><em>UI Policies that apply to field <span style="color: green">${selectedFieldName}</span></em></strong></h3>`;
+        policies.forEach((policy) => {
+          policiesHTML += 
+            `<div class='panel panel-default'>
+              <div class='panel-body'>
+                <p>"${policy.name}"</p>
+                <p><a>${policy.url}</a></p>
+              </div>
+            </div>`
+        });
+        targetEl.innerHTML = policiesHTML;
+      }
+
+      function renderClientScripts(selectedFieldName, clientScripts){
+        var clientScriptsTab = _spPanelWindow.document.getElementById("clientScriptsSelector");
+        clientScriptsTab.style.display = "block";
+        console.log(clientScripts)
+
+        var targetEl = _spPanelWindow.document.getElementById("clientScriptsList");
+        var clientScriptsHTML = `<h3><strong><em>Client Scripts that refer to field <span style="color: green">${selectedFieldName}</span></em></strong></h3>`;
+        clientScripts.forEach((clientScript) => {
+          clientScriptsHTML += 
+            `<div class='panel panel-default'>
+              <div class='panel-body'>
+                <p>"${clientScript.name}"</p>
+                <p>"${clientScript.type}"</p>
+                <p><a>${clientScript.url}</a></p>
+              </div>
+            </div>`
+        });
+        targetEl.innerHTML = clientScriptsHTML;
+      }
+
       /**
        * Bootstrap tab changes are difficult to react to without JQuery,
        * so the MutationObserver class will be used instead of addEventListener.
@@ -513,6 +588,26 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
       var showReferenceBtn = _spPanelWindow.document.getElementById("showReferenceBtn");
       showReferenceBtn.addEventListener("click", () => {
         formUtil.showReference(getSelectedFieldName());
+      }, false);
+
+      // add event listeners to the search UI Policies button
+      var showUiPoliciesBtn = _spPanelWindow.document.getElementById("showUiPoliciesBtn");
+      showUiPoliciesBtn.addEventListener("click", () => {
+        var selectedFieldName = getSelectedFieldName();
+        formUtil.showUiPolicies(selectedFieldName).then((policies) => {renderUiPolicies(selectedFieldName, policies)});
+      }, false);
+
+      // add event listeners to the search UI Policies button
+      var showClientScriptsBtn = _spPanelWindow.document.getElementById("showClientScriptsBtn");
+      showClientScriptsBtn.addEventListener("click", () => {
+        var selectedFieldName = getSelectedFieldName();
+        formUtil.showClientScripts(selectedFieldName).then((clientScripts) => {renderClientScripts(selectedFieldName, clientScripts)});
+      }, false);
+
+      // add event listeners to the hide field button
+      var createIssueBtn = _spPanelWindow.document.getElementById("createIssue");
+      createIssueBtn.addEventListener("click", () => {
+        createNewIssue();
       }, false);
 
     }).catch((e) => {

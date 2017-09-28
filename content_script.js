@@ -1,6 +1,6 @@
 // inject script into page
 var injection = document.createElement('script');
-injection.src = chrome.extension.getURL('injectable.js');
+injection.src = chrome.extension.getURL('snkit.js');
 (document.head||document.documentElement).appendChild(injection);
 injection.onload = () => {
   injection.parentNode.removeChild(injection);

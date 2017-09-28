@@ -51,6 +51,9 @@
         box-shadow: 0px 0px 20px #888;
         margin-bottom: 40px;
       }
+      .issueLink:hover{
+        cursor: pointer;
+      }
     </style>
   </head>
 <body>
@@ -60,8 +63,10 @@
       <div class="gridDebug col-md-12">
         <ul class="nav nav-tabs">
           <li class="active"><a data-toggle="tab" href="#formFields">Form Fields</a></li>
+          <li style="display: none" id="uiPoliciesSelector"><a data-toggle="tab" href="#uiPoliciesTab">UI Policies</a></li>
+          <li style="display: none" id="clientScriptsSelector"><a data-toggle="tab" href="#clientScriptsTab">Client Scripts</a></li>
           <li><a data-toggle="tab" href="#servicePortalTab">Service Portal</a></li>
-          <li><a data-toggle="tab" href="#menu2">Help</a></li>
+          <li><a data-toggle="tab" href="#help">Help</a></li>
         </ul>
       </div>
     </div>
@@ -104,6 +109,8 @@
                   <li><a href="#" id="showAllHiddenFieldsBtn">Show all hidden fields</a></li>
                 </ul>
               </div>
+              <button id="showClientScriptsBtn" class="btn btn-default">Search Client Scripts</button>
+              <button id="showUiPoliciesBtn" class="btn btn-default">Search UI Policies</button>
               <button id="showReferenceBtn" class="btn btn-default">Evaluate reference in console</button>
             </div>
           </div>
@@ -152,6 +159,30 @@
         </div>
       </div>
     </div> <!-- End Form Analyzer -->
+    <!-- Begin UI Policies -->
+    <div class="tab-pane" id="uiPoliciesTab" role="tabpanel">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6">
+            <div id="policiesList"></div>
+          </div>
+          <div class="col-md-6"></div>
+        </div>
+      </div>
+    </div>
+    <!-- End UI Policies -->
+    <!-- Begin Client Scripts -->
+    <div class="tab-pane" id="clientScriptsTab" role="tabpanel">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6">
+            <div id="clientScriptsList"></div>
+          </div>
+          <div class="col-md-6"></div>
+        </div>
+      </div>
+    </div>
+    <!-- End Client Scripts -->
     <!-- Begin Service Portal -->
     <div class="tab-pane" id="servicePortalTab" role="tabpanel">
       <div class="container-fluid">
@@ -196,6 +227,34 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="help" role="tabpanel">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="panel panel-default" id="pageDetails">
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-md-9">
+                    <h3><strong><em>Got Issues?</em></strong></h3>
+                    <p>If you're having any technical difficulties with the SNKit devtools extension or you'd like to 
+                      see something changed, please log an issue through the SNKit GitHub page link below.</p>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h4 class="issueLink" id="createIssue"><strong><em><a>Create New Issue</a></em></strong></h4>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <img src="./resources/images/GitHub-Mark-120px-plus.png">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6"></div>
         </div>
       </div>
     </div>
