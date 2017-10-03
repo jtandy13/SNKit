@@ -242,7 +242,22 @@ var formUtil = (() => {
           }
         });
       });
-    }
+    },
+    showBusinessRules: (fieldName) => {
+      // Create a port for communication with the event page
+      var port = chrome.runtime.connect({name: "devtools-page"});
+      return new Promise((resolve, reject) => {
+        port.postMessage({ tabId: getTabId(), text: "showBusinessRules", cmdType: "page", data: {fieldName: fieldName} });
+        port.onMessage.addListener((data) => {
+          if(data.type == "EVENT_PAGE" && data.cmd == "showBusinessRules"){
+            console.log("showBusinessRules port.disconnect()");
+            port.disconnect();
+            if(data.content) resolve(data.content);
+            else reject();
+          }
+        });
+      });
+    },
   }
 })();
 
@@ -327,8 +342,12 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
 
         data.forEach(function (obj) {
           variableHTML += `
-            <div class='col-md-12'>
-            <div class='panel panel-default fields' id=${obj.fieldName}>
+            <div class='col-md-12'>`
+            if(obj.variableEditor)
+              variableHTML += `<div class='panel panel-default fields' id=${obj.Name}>`
+            else 
+              variableHTML += `<div class='panel panel-default fields' id=${obj.fieldName}>`
+            variableHTML += `
             <div class='panel-body propertyKey'>
             <p>Name: <span class='propertyValue'>${obj.Name}</span></p>
             <p>Field name: <span class='propertyValue'>${obj.fieldName}</span></p>
@@ -514,6 +533,28 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         targetEl.innerHTML = clientScriptsHTML;
       }
 
+      function renderBusinessRules(selectedFieldName, businessRules){
+        var businessRulesTab = _spPanelWindow.document.getElementById("businessRulesSelector");
+        businessRulesTab.style.display = "block";
+        console.log(businessRules)
+
+        var targetEl = _spPanelWindow.document.getElementById("businessRulesList");
+        var businessRulesHTML = `<h3><strong><em>Business Rules that refer to field <span style="color: green">${selectedFieldName}</span></em></strong></h3>`;
+        businessRules.forEach((businessRule) => {
+          
+          businessRulesHTML += 
+            `<div class='panel panel-default'>
+              <div class='panel-body'>
+                <p><strong>"${businessRule.name}"</strong></p>
+                <p>When: ${businessRule.when}</p>
+                <p>For: ${businessRule.for.toString()}</p>
+                <p><a>${businessRule.url}</a></p>
+              </div>
+            </div>`
+        });
+        targetEl.innerHTML = businessRulesHTML;
+      }
+
       /**
        * Bootstrap tab changes are difficult to react to without JQuery,
        * so the MutationObserver class will be used instead of addEventListener.
@@ -597,11 +638,18 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         formUtil.showUiPolicies(selectedFieldName).then((policies) => {renderUiPolicies(selectedFieldName, policies)});
       }, false);
 
-      // add event listeners to the search UI Policies button
+      // add event listeners to the search Client Scripts button
       var showClientScriptsBtn = _spPanelWindow.document.getElementById("showClientScriptsBtn");
       showClientScriptsBtn.addEventListener("click", () => {
         var selectedFieldName = getSelectedFieldName();
         formUtil.showClientScripts(selectedFieldName).then((clientScripts) => {renderClientScripts(selectedFieldName, clientScripts)});
+      }, false);
+
+      // add event listeners to the search Business Rules button
+      var showBusinessRulesBtn = _spPanelWindow.document.getElementById("showBusinessRulesBtn");
+      showBusinessRulesBtn.addEventListener("click", () => {
+        var selectedFieldName = getSelectedFieldName();
+        formUtil.showBusinessRules(selectedFieldName).then((businessRules) => {renderBusinessRules(selectedFieldName, businessRules)});
       }, false);
 
       // add event listeners to the hide field button

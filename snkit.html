@@ -65,6 +65,7 @@
           <li class="active"><a data-toggle="tab" href="#formFields">Form Fields</a></li>
           <li style="display: none" id="uiPoliciesSelector"><a data-toggle="tab" href="#uiPoliciesTab">UI Policies</a></li>
           <li style="display: none" id="clientScriptsSelector"><a data-toggle="tab" href="#clientScriptsTab">Client Scripts</a></li>
+          <li style="display: none" id="businessRulesSelector"><a data-toggle="tab" href="#businessRulesTab">Business Rules</a></li>
           <li><a data-toggle="tab" href="#servicePortalTab">Service Portal</a></li>
           <li><a data-toggle="tab" href="#help">Help</a></li>
         </ul>
@@ -111,6 +112,7 @@
               </div>
               <button id="showClientScriptsBtn" class="btn btn-default">Search Client Scripts</button>
               <button id="showUiPoliciesBtn" class="btn btn-default">Search UI Policies</button>
+              <button id="showBusinessRulesBtn" class="btn btn-default">Search Business Rules</button>
               <button id="showReferenceBtn" class="btn btn-default">Evaluate reference in console</button>
             </div>
           </div>
@@ -183,6 +185,18 @@
       </div>
     </div>
     <!-- End Client Scripts -->
+    <!-- Begin Business Rules -->
+    <div class="tab-pane" id="businessRulesTab" role="tabpanel">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6">
+            <div id="businessRulesList"></div>
+          </div>
+          <div class="col-md-6"></div>
+        </div>
+      </div>
+    </div>
+    <!-- End Business Rules -->
     <!-- Begin Service Portal -->
     <div class="tab-pane" id="servicePortalTab" role="tabpanel">
       <div class="container-fluid">

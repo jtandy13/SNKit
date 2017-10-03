@@ -72,11 +72,11 @@ function getCatItemProperties(targetWin, callback) {
   var formElements = targetWin.g_form.elements;
   var nameMapClone = targetWin.g_form.nameMap;
   var hasVariableEditor = targetWin.g_form.prefixHandlers.variables ? true : false;
-  //separate the fields and variables into separate arrays
+  //separate the fields and variables into separate arrays for catalog items
   formElements.forEach((elem, i) => {
     if (elem.tableName == "variable" && !elem.fieldName.startsWith("ni.")){
       variables.push(elem);
-    } else {
+    } else if(!elem.fieldName.startsWith("ni.")){
       fields.push(elem);
     }
   });
@@ -96,6 +96,7 @@ function getCatItemProperties(targetWin, callback) {
     varObj.scope = variables[i].scope;
     varObj.tableName = variables[i].tableName;
     varObj.type = variables[i].type;
+    varObj.variableEditor = hasVariableEditor;
     //if this is a reference field, then we need to get the display value as well
     if(varObj.reference != "null" && hasVariableEditor)
       varObj.displayValue = targetWin.g_form.getDisplayBox("ni.VE" + varObj.fieldName).value;
@@ -263,7 +264,7 @@ function showUiPolicies(fieldName, callback) {
   })
   callback(targetPolicies);
 }
-//TODO: convert to client script collection. Gather client script type as well
+
 function showClientScripts(fieldName, callback) {
   var targetWindow = getTargetWindow()
   var clientScriptsObj = targetWindow.g_event_handler_ids;
@@ -287,8 +288,32 @@ function showClientScripts(fieldName, callback) {
       }));
     }
   Promise.all(promises).then(() => {callback(targetClientScripts)});
-  /*console.log(targetClientScripts);
-  callback(targetClientScripts);*/
+}
+
+function showBusinessRules(fieldName, callback) {
+  var targetWindow = getTargetWindow()
+  var targetBusinessRules = [];
+  var gr = new targetWindow.GlideRecord("sys_script");
+  gr.addQuery("collection", targetWindow.g_form.tableName);
+  new Promise((resolve, reject) => {
+    gr.query(function(rec){
+      while (rec.next()) {
+        if (rec.script.search(fieldName) != -1 || rec.template.search(fieldName) != -1) {
+          var scriptDetailObj = {};
+          scriptDetailObj.name = rec.name;
+          scriptDetailObj.when = rec.when;
+          scriptDetailObj.for = [];
+          if (rec.action_delete == "true") scriptDetailObj.for.push("Delete");
+          if (rec.action_insert == "true") scriptDetailObj.for.push("Insert");
+          if (rec.action_query == "true") scriptDetailObj.for.push("Query");
+          if (rec.action_update == "true") scriptDetailObj.for.push("Update");
+          scriptDetailObj.url = `https://${targetWindow.location.hostname}/sys_script.do?sys_id=${rec.sys_id}`;
+          targetBusinessRules.push(scriptDetailObj);
+        }
+      }
+      resolve();
+    });
+  }).then(() => { callback(targetBusinessRules) });
 }
 
 window.addEventListener("myCmdEvent", function(event) {
@@ -336,6 +361,11 @@ window.addEventListener("myCmdEvent", function(event) {
     });
   } else if (cmd === "showClientScripts"){
     showClientScripts(cmdData.fieldName, (data) => {
+      // send the data back to the content script
+      window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
+    });
+  } else if (cmd === "showBusinessRules"){
+    showBusinessRules(cmdData.fieldName, (data) => {
       // send the data back to the content script
       window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
     });
