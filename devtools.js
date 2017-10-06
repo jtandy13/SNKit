@@ -188,11 +188,11 @@ var formUtil = (() => {
         });
       });
     },
-    showAllHiddenFields: () => {
+    showAllHiddenFields: (fieldDetails) => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({name: "devtools-page"});
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "showAllHiddenFields", cmdType: "page", data: {} });
+        port.postMessage({ tabId: getTabId(), text: "showAllHiddenFields", cmdType: "page", data: {fieldDetails: fieldDetails} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showAllHiddenFields"){
             console.log("showAllHiddenFields port.disconnect()");
@@ -328,7 +328,7 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
             fieldHTML += `
             <div class='panel panel-default fields' id=${obj.fieldName} data-fieldname='${obj.fieldName}' data-label='${obj.label}'
               data-name='${obj.Name ? obj.Name : ""}' data-currentvalue='${obj.currentValue}' data-displayvalue='${obj.displayValue ? obj.displayValue : ""}'
-              data-type='${obj.type}' data-reference='${obj.reference}' data-mandatory='${obj.mandatory}'>
+              data-type='${obj.type}' data-reference='${obj.reference}' data-mandatory='${obj.mandatory}' data-tablename='${obj.tableName}'>
             <div class='panel-body propertyKey'>
             <p>Field name: <span class='propertyValue'>${obj.fieldName}</span></p>
             <p>Label: <span class='propertyValue'>${obj.label}</span></p>
@@ -361,7 +361,7 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
               variableHTML += `<div class='panel panel-default fields' id=${obj.fieldName}`
             variableHTML += ` data-name='${obj.Name}' data-fieldname='${obj.fieldName}' data-label='${obj.label}'
               data-currentvalue='${obj.currentValue}' data-displayvalue='${obj.displayValue ? obj.displayValue : ""}'
-              data-type='${obj.type}' data-reference='${obj.reference}' data-mandatory='${obj.mandatory}'>
+              data-type='${obj.type}' data-reference='${obj.reference}' data-mandatory='${obj.mandatory}' data-tablename='${obj.tableName}'>
               <div class='panel-body propertyKey'>
               <p>Name: <span class='propertyValue'>${obj.Name}</span></p>
               <p>Field name: <span class='propertyValue'>${obj.fieldName}</span></p>
@@ -656,7 +656,15 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
       // add event listeners to the hide field button
       var showAllHiddenFieldsBtn = _spPanelWindow.document.getElementById("showAllHiddenFieldsBtn");
       showAllHiddenFieldsBtn.addEventListener("click", () => {
-        formUtil.showAllHiddenFields();
+        var fields = _spPanelWindow.document.querySelectorAll(".fields");
+        var fieldDetails = [];
+        fields.forEach((field) => {
+          var fieldObj = {};
+          fieldObj.fieldName = field.dataset.fieldname;
+          if (field.dataset.tablename == "variable") fieldObj.name = field.dataset.name;
+          fieldDetails.push(fieldObj);
+        })
+        formUtil.showAllHiddenFields(fieldDetails);
       }, false);
 
       // add event listeners to the hide field button

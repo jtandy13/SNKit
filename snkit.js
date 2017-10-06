@@ -189,16 +189,16 @@ function showHideField(fieldName, show, callback) {
   callback();
 }
 
-function showAllHiddenFields(callback) {
+function showAllHiddenFields(fieldDetails, callback) {
   var targetWin = getTargetWindow();
-  var tableName = targetWin.g_form.tableName;
-  targetWin.g_form.elements.forEach((elem) => {
-    var topFieldElement = targetWin.document.getElementById(`element.${tableName}.${elem.fieldName}`);
-    if(topFieldElement.style.display == "none"){
-      console.log(topFieldElement);
-      targetWin.g_form.setDisplay(elem.fieldName, true);
+  var hasVariableEditor = targetWin.g_form.prefixHandlers.variables ? true : false;
+  fieldDetails.forEach((field) => {
+    if (field.name && hasVariableEditor){
+      targetWin.g_form.setDisplay(field.name, true);
+    } else {
+      targetWin.g_form.setDisplay(field.fieldName, true);
     }
-  })
+  });
   callback();
 }
 
@@ -344,7 +344,7 @@ window.addEventListener("myCmdEvent", function(event) {
       window.postMessage({ type: "from_page", text: "completed", cmd: cmd }, "*");
     })
   } else if (cmd === "showAllHiddenFields"){
-    showAllHiddenFields(() => {
+    showAllHiddenFields(cmdData.fieldDetails, () => {
       window.postMessage({ type: "from_page", text: "completed", cmd: cmd }, "*");
     })
   } else if (cmd === "showReference"){
