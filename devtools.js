@@ -318,12 +318,14 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
     });
 
     show.then((_spPanelWindow) => {
-      function renderFieldsAnalysis(data) {
-        var fieldHTML = "";
-        var targetEl = _spPanelWindow.document.getElementById("fieldsList");
 
-        data.forEach(function (obj) {
-          fieldHTML += `
+      function renderFieldsAnalysis(data) {
+        if (data.length > 0) {
+          var fieldHTML = "";
+          var targetEl = _spPanelWindow.document.getElementById("fieldsList");
+
+          data.forEach(function (obj) {
+            fieldHTML += `
             <div class='panel panel-default fields' id=${obj.fieldName} data-fieldname='${obj.fieldName}' data-label='${obj.label}'
               data-name='${obj.Name ? obj.Name : ""}' data-currentvalue='${obj.currentValue}' data-displayvalue='${obj.displayValue ? obj.displayValue : ""}'
               data-type='${obj.type}' data-reference='${obj.reference}' data-mandatory='${obj.mandatory}'>
@@ -331,26 +333,31 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
             <p>Field name: <span class='propertyValue'>${obj.fieldName}</span></p>
             <p>Label: <span class='propertyValue'>${obj.label}</span></p>
             <p>Current value: <span class='propertyValue'>${obj.currentValue}</span></p>`
-          if(obj.displayValue)
-            fieldHTML +=`<p>Display value: <span class='propertyValue'>${obj.displayValue}</span></p>`
-          fieldHTML +=`
+            if (obj.displayValue)
+              fieldHTML += `<p>Display value: <span class='propertyValue'>${obj.displayValue}</span></p>`
+            fieldHTML += `
             <p>Type: <span class='propertyValue'>${obj.type}</span></p>
             <p>Reference: <span class='propertyValue'>${obj.reference}</span></p>
             <p>Table name: <span class='propertyValue'>${obj.tableName}</span></p>
             <p>Mandatory: <span class='propertyValue'>${obj.mandatory}</span></p>
             <p>Scope: <span class='propertyValue'>${obj.scope}</span></p>            
             </div></div>`
-        });
-        targetEl.innerHTML = fieldHTML;
+          });
+          targetEl.innerHTML = fieldHTML;
+          var fieldsLabel = _spPanelWindow.document.getElementById("fieldsLabel")
+          fieldsLabel.style.display = "block";
+        }
       }
-      function renderVariablesAnalysis(data) {
-        var variableHTML = "";
-        var targetEl = _spPanelWindow.document.getElementById("variablesList");
 
-        data.forEach(function (obj) {
-            if(obj.variableEditor)
+      function renderVariablesAnalysis(data) {
+        if (data.length > 0) {
+          var variableHTML = "";
+          var targetEl = _spPanelWindow.document.getElementById("variablesList");
+
+          data.forEach(function (obj) {
+            if (obj.variableEditor)
               variableHTML += `<div class='panel panel-default fields' id=${obj.Name}`
-            else 
+            else
               variableHTML += `<div class='panel panel-default fields' id=${obj.fieldName}`
             variableHTML += ` data-name='${obj.Name}' data-fieldname='${obj.fieldName}' data-label='${obj.label}'
               data-currentvalue='${obj.currentValue}' data-displayvalue='${obj.displayValue ? obj.displayValue : ""}'
@@ -360,17 +367,20 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
               <p>Field name: <span class='propertyValue'>${obj.fieldName}</span></p>
               <p>Label: <span class='propertyValue'>${obj.label}</span></p>
               <p>Current value: <span class='propertyValue'>${obj.currentValue}</span></p>`
-          if(obj.displayValue)
-            variableHTML +=`<p>Display value: <span class='propertyValue'>${obj.displayValue}</span></p>`
-          variableHTML += `
+            if (obj.displayValue)
+              variableHTML += `<p>Display value: <span class='propertyValue'>${obj.displayValue}</span></p>`
+            variableHTML += `
             <p>Type: <span class='propertyValue'>${obj.type}</span></p>
             <p>Reference: <span class='propertyValue'>${obj.reference}</span></p>
             <p>Table name: <span class='propertyValue'>${obj.tableName}</span></p>
             <p>Mandatory: <span class='propertyValue'>${obj.mandatory}</span></p>
             <p>Scope: <span class='propertyValue'>${obj.scope}</span></p>
             </div></div>`
-        });
-        targetEl.innerHTML = variableHTML;
+          });
+          targetEl.innerHTML = variableHTML;
+          var variablesLabel = _spPanelWindow.document.getElementById("variablesLabel")
+          variablesLabel.style.display = "block";
+        }
       }
       function makeFieldsSelectable() {
         var fieldsArray = _spPanelWindow.document.querySelectorAll(".fields");
