@@ -325,7 +325,7 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         data.forEach(function (obj) {
           fieldHTML += `
             <div class='panel panel-default fields' id=${obj.fieldName} data-fieldname='${obj.fieldName}' data-label='${obj.label}'
-              data-currentvalue='${obj.currentValue}' data-displayvalue='${obj.displayValue ? obj.displayValue : ""}'
+              data-name='${obj.Name ? obj.Name : ""}' data-currentvalue='${obj.currentValue}' data-displayvalue='${obj.displayValue ? obj.displayValue : ""}'
               data-type='${obj.type}' data-reference='${obj.reference}' data-mandatory='${obj.mandatory}'>
             <div class='panel-body propertyKey'>
             <p>Field name: <span class='propertyValue'>${obj.fieldName}</span></p>
@@ -355,11 +355,11 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
             variableHTML += ` data-name='${obj.Name}' data-fieldname='${obj.fieldName}' data-label='${obj.label}'
               data-currentvalue='${obj.currentValue}' data-displayvalue='${obj.displayValue ? obj.displayValue : ""}'
               data-type='${obj.type}' data-reference='${obj.reference}' data-mandatory='${obj.mandatory}'>
-            <div class='panel-body propertyKey'>
-            <p>Name: <span class='propertyValue'>${obj.Name}</span></p>
-            <p>Field name: <span class='propertyValue'>${obj.fieldName}</span></p>
-            <p>Label: <span class='propertyValue'>${obj.label}</span></p>
-            <p>Current value: <span class='propertyValue'>${obj.currentValue}</span></p>`
+              <div class='panel-body propertyKey'>
+              <p>Name: <span class='propertyValue'>${obj.Name}</span></p>
+              <p>Field name: <span class='propertyValue'>${obj.fieldName}</span></p>
+              <p>Label: <span class='propertyValue'>${obj.label}</span></p>
+              <p>Current value: <span class='propertyValue'>${obj.currentValue}</span></p>`
           if(obj.displayValue)
             variableHTML +=`<p>Display value: <span class='propertyValue'>${obj.displayValue}</span></p>`
           variableHTML += `
@@ -688,9 +688,6 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         var searchCategory = _spPanelWindow.document.getElementById("searchCategory").selectedOptions[0].id;
         var searchText = _spPanelWindow.document.getElementById("searchText").value;
         var fieldPanels = _spPanelWindow.document.querySelectorAll(".fields");
-        console.log(`searchCategory = ${searchCategory}`);
-        console.log(`searchText = ${searchText}`);
-        console.log(`fieldPanels.length = ${fieldPanels.length}`);
         fieldPanels.forEach((fieldPanel) => {
           if (fieldPanel.dataset[searchCategory].toUpperCase().includes(searchText.toUpperCase())) {
             //console.log("found it! " + fieldPanel.id);
@@ -699,6 +696,25 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
             fieldPanel.style.display = "none";
           }
         })
+      }, false);
+
+      // handle the enter key when pressed inside the search text input
+      var searchText = _spPanelWindow.document.getElementById("searchText");
+      searchText.addEventListener("keypress", (event) => {
+        var keyCode = event.keyCode || event.which;
+        if (keyCode == "13") {
+          var searchCategory = _spPanelWindow.document.getElementById("searchCategory").selectedOptions[0].id;
+          var searchTextValue = _spPanelWindow.document.getElementById("searchText").value;
+          var fieldPanels = _spPanelWindow.document.querySelectorAll(".fields");
+          fieldPanels.forEach((fieldPanel) => {
+            if (fieldPanel.dataset[searchCategory].toUpperCase().includes(searchTextValue.toUpperCase())) {
+              //console.log("found it! " + fieldPanel.id);
+              fieldPanel.style.display = "block";
+            } else {
+              fieldPanel.style.display = "none";
+            }
+          });
+        }
       }, false);
 
     }).catch((e) => {
