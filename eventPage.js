@@ -7,7 +7,7 @@ chrome.runtime.onConnect.addListener(function(port) {
       
   } else if (thisPort.name == "devtools-page") {
     thisPort.onMessage.addListener(function(message) {
-      Object.keys(message).map((e) => console.log(`key=${e}  value=${message[e]}`));
+      //Object.keys(message).map((e) => console.log(`key=${e}  value=${message[e]}`));
       if (message.cmdType == "event_page") {
         if (message.text == "openInNewTab") {
           chrome.tabs.create({ url: message.data.url });
@@ -17,7 +17,6 @@ chrome.runtime.onConnect.addListener(function(port) {
           { type: "EVENT_PAGE", text: message.text, cmdType: message.cmdType, data: message.data },
           {},
           function (response) {
-            console.log(response);
             // Relay to devtools only when a response exists
             if (response) {
               thisPort.postMessage({ type: "EVENT_PAGE", content: response.data, cmd: response.cmd });

@@ -11,7 +11,6 @@ function alphaSortDataObject(propName, dataObj) {
       }
       return comparison;
     })
-    console.log("resolved");
     resolve(dataObj)
   })
 }
@@ -372,55 +371,4 @@ window.addEventListener("myCmdEvent", function(event) {
       window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
     });
   }
-   /*else if (cmd === "getFields") {
-        getFields(function(data) {
-            // send the data back to the content script
-            window.postMessage(
-                { 
-                    type: "from_page", 
-                    text: data, 
-                    cmd: cmd 
-                }, "*");
-        });
-    } else if (cmd === "enableDisableField") {
-        enableDisableField(cmdData.fieldNames, cmdData.disable, function() {
-            // send the confirmation back to the content script
-            window.postMessage(
-                { 
-                    type: "from_page", 
-                    text: "completed", 
-                    cmd: cmd 
-                }, "*");
-        });
-    } else if (cmd === "setRemoveMandatory") {
-        setRemoveMandatory(cmdData.fieldNames, cmdData.mandatory, function() {
-            // send the confirmation back to the content script
-            window.postMessage(
-                { 
-                    type: "from_page", 
-                    text: "completed", 
-                    cmd: cmd 
-                }, "*");
-        });
-    } else if (cmd === "showHideField") {
-        showHideField(cmdData.fieldNames, cmdData.show, function() {
-            // send the confirmation back to the content script
-            window.postMessage(
-                { 
-                    type: "from_page", 
-                    text: "completed", 
-                    cmd: cmd 
-                }, "*");
-        });
-    } else if (cmd === "getCurrentUserName") {
-        getCurrentUserName(function(data) {
-            // send the confirmation back to the content script
-            window.postMessage(
-                { 
-                    type: "from_page", 
-                    text: data, 
-                    cmd: cmd 
-                }, "*");
-        });
-    }*/
 }, false);

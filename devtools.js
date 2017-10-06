@@ -64,7 +64,6 @@ var widgetUtil = (() => {
       else
         var inspectScript = `inspect(document.querySelector(".${widgetIdentityObj.idNum}"))`
       chrome.devtools.inspectedWindow.eval(inspectScript, {}, function (result, exceptionInfo) {
-        console.log(result);
       });
     },
     highlightWidget: (widgetIdentityObj) => {
@@ -117,7 +116,6 @@ var formUtil = (() => {
         port.postMessage({ tabId: getTabId(), text: "getFormProperties", cmdType: "page", data: {} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "getFormProperties"){
-            console.log("getFormProperties port.disconnect()");
             port.disconnect();
             if(data.content) resolve(data.content);
             else reject();
@@ -132,7 +130,6 @@ var formUtil = (() => {
         port.postMessage({ tabId: getTabId(), text: "clearValue", cmdType: "page", data: {fieldName: fieldName} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "clearValue"){
-            console.log("clearValue port.disconnect()");
             port.disconnect();
             if(data.content) resolve(data.content);
             else reject();
@@ -148,7 +145,6 @@ var formUtil = (() => {
           data: {fieldName: fieldName, disable: disable} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "enableDisableField"){
-            console.log("enableDisableField port.disconnect()");
             port.disconnect();
             if(data.content) resolve(data.content);
             else reject();
@@ -164,7 +160,6 @@ var formUtil = (() => {
           data: {fieldName: fieldName, mandatory: mandatory} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "setRemoveMandatory"){
-            console.log("setRemoveMandatory port.disconnect()");
             port.disconnect();
             if(data.content) resolve(data.content);
             else reject();
@@ -180,7 +175,6 @@ var formUtil = (() => {
           data: {fieldName: fieldName, show: show} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showHideField"){
-            console.log("showHideField port.disconnect()");
             port.disconnect();
             if(data.content) resolve(data.content);
             else reject();
@@ -195,7 +189,6 @@ var formUtil = (() => {
         port.postMessage({ tabId: getTabId(), text: "showAllHiddenFields", cmdType: "page", data: {fieldDetails: fieldDetails} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showAllHiddenFields"){
-            console.log("showAllHiddenFields port.disconnect()");
             port.disconnect();
             if(data.content) resolve(data.content);
             else reject();
@@ -210,7 +203,6 @@ var formUtil = (() => {
         port.postMessage({ tabId: getTabId(), text: "showReference", cmdType: "page", data: {fieldName: fieldName} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showReference"){
-            console.log("showReference port.disconnect()");
             port.disconnect();
             if(data.content) resolve(data.content);
             else reject();
@@ -225,7 +217,6 @@ var formUtil = (() => {
         port.postMessage({ tabId: getTabId(), text: "showUiPolicies", cmdType: "page", data: {fieldName: fieldName} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showUiPolicies"){
-            console.log("showUiPolicies port.disconnect()");
             port.disconnect();
             if(data.content) resolve(data.content);
             else reject();
@@ -240,7 +231,6 @@ var formUtil = (() => {
         port.postMessage({ tabId: getTabId(), text: "showClientScripts", cmdType: "page", data: {fieldName: fieldName} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showClientScripts"){
-            console.log("showClientScripts port.disconnect()");
             port.disconnect();
             if(data.content) resolve(data.content);
             else reject();
@@ -255,7 +245,6 @@ var formUtil = (() => {
         port.postMessage({ tabId: getTabId(), text: "showBusinessRules", cmdType: "page", data: {fieldName: fieldName} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showBusinessRules"){
-            console.log("showBusinessRules port.disconnect()");
             port.disconnect();
             if(data.content) resolve(data.content);
             else reject();
@@ -548,7 +537,6 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
       function renderClientScripts(selectedFieldName, clientScripts){
         var clientScriptsTab = _spPanelWindow.document.getElementById("clientScriptsSelector");
         clientScriptsTab.style.display = "block";
-        console.log(clientScripts)
 
         var targetEl = _spPanelWindow.document.getElementById("clientScriptsList");
         var clientScriptsHTML = `<h3><strong><em>Client Scripts that refer to field <span style="color: green">${selectedFieldName}</span></em></strong></h3>`;
@@ -569,7 +557,6 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
       function renderBusinessRules(selectedFieldName, businessRules){
         var businessRulesTab = _spPanelWindow.document.getElementById("businessRulesSelector");
         businessRulesTab.style.display = "block";
-        console.log(businessRules)
 
         var targetEl = _spPanelWindow.document.getElementById("businessRulesList");
         var businessRulesHTML = `<h3><strong><em>Business Rules that refer to field <span style="color: green">${selectedFieldName}</span></em></strong></h3>`;
@@ -708,7 +695,6 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         var fieldPanels = _spPanelWindow.document.querySelectorAll(".fields");
         fieldPanels.forEach((fieldPanel) => {
           if (fieldPanel.dataset[searchCategory].toUpperCase().includes(searchText.toUpperCase())) {
-            //console.log("found it! " + fieldPanel.id);
             fieldPanel.style.display = "block";
           } else {
             fieldPanel.style.display = "none";
@@ -726,7 +712,6 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
           var fieldPanels = _spPanelWindow.document.querySelectorAll(".fields");
           fieldPanels.forEach((fieldPanel) => {
             if (fieldPanel.dataset[searchCategory].toUpperCase().includes(searchTextValue.toUpperCase())) {
-              //console.log("found it! " + fieldPanel.id);
               fieldPanel.style.display = "block";
             } else {
               fieldPanel.style.display = "none";

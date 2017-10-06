@@ -8,7 +8,6 @@ injection.onload = () => {
 
 //Create a custom DOM event for communication with the page
 function sendCmd(cmd, cmdData) {
-    console.log("dispatching message for: "+cmd);
     var cmdEvent = new CustomEvent('myCmdEvent', {detail: { cmd: cmd, cmdData: cmdData } });
     window.dispatchEvent(cmdEvent);
 }
@@ -23,7 +22,6 @@ function relayResponse(sendResponse) {
       return;
     
     if (event.data.type && (event.data.type == "from_page")) {
-      console.log("about to respond with: "+ event.data.cmd);
       _response( { data: event.data.text, cmd: event.data.cmd });
     }
   }, false);
@@ -48,8 +46,6 @@ function removeWidgetHighlight(widgetIdentityObj) {
 // Make a decision about where the command will be executed;
 // either on the page or in the content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log("incoming message: ");
-    console.log(message);
     if (message.type == "EVENT_PAGE" && message.cmdType == "page") {
       sendCmd(message.text, message.data);
       relayResponse(sendResponse);
@@ -64,29 +60,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       } else if(message.text == "removeWidgetHighlight"){
         removeWidgetHighlight(data);
       }
-      /*var data = message.data;
-      if(message.text == "toggleBorder"){
-        toggleBorder(data.classNames);
-      }
-      if(message.text == "toggleContainerBorder"){
-        toggleContainerBorder();
-      }
-      if(message.text == "toggleRowBorder"){
-        toggleRowBorder();
-      }
-      if(message.text == "toggleColumnBorder"){
-        toggleColumnBorder();
-      }
-      if(message.text == "getScriptInfo"){
-        getScriptInfo(sendResponse);
-        return true;
-      }
-      if(message.text == "impersonateUser"){
-        impersonateUser(data.userName).then(pageReload());
-      }
-      if(message.text == "enableAll"){
-        enableAll(data.userName);
-      }*/
     }
   }
 )
