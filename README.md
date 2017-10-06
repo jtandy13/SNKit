@@ -5,14 +5,14 @@ Chrome Developer Tools extension for ServiceNow
 SNKit is a devtools project dedicated to enabling quicker debugging of ServiceNow forms and Service Portal pages. The goals of the project are to:
 
 1. Establish a platform where devtools can interact with the ServiceNow page in a more meaningful way.
-2. Aid in debugging ServiceNow production instances by enabling administrators and developers to manipulate the page without making changes to the instance.
+2. Aid in debugging ServiceNow pages by enabling administrators and developers to manipulate the page without making changes to the instance.
 3. Enable faster analysis of ServiceNow pages leading to quicker incident resolution.
 
 ## Sidebars
 All of the SNKit sidebars can be found in the Elements panel of Chrome devtools.
 
 ### ServiceNow Form Fields
-All form fields are laid out in alphabetical order giving quick access to vital field details. The ServiceNow Form Fields sidebar appear whenever a devtools opens to inspect a form page.
+All form fields are laid out in alphabetical order giving quick access to vital field details. The ServiceNow Form Fields sidebar appears whenever devtools opens to inspect a form page.
 
 ![servicenow_form_fields](https://user-images.githubusercontent.com/22809154/31272220-edfda80c-aad5-11e7-918f-e947ab54bcb1.jpg)
 
@@ -34,14 +34,14 @@ The Forms tab allows for field and variable manipulation through the first four 
 
 ![form_tab](https://user-images.githubusercontent.com/22809154/31272536-0933306e-aad7-11e7-8e1b-da51f316547f.jpg)
 
-Underneath the field manipulation functions are four extra functions used for analysis. Client Scripts, UI Policies, and Business Rules of the table you are using can be searched for any reference of the selected field or variable. Search results will appear in their own tab.
+Underneath the field manipulation functions are four extra functions used for analysis. Client Scripts, UI Policies, and Business Rules of the current table can be searched for any reference of the selected field or variable. Search results will appear in their own tab. The "Evaluate reference in console" function send the complete GlideRecord of the reference to the console to inspect.
 
 ![client_scripts_search](https://user-images.githubusercontent.com/22809154/31272608-4c8c0340-aad7-11e7-9812-f63691868c0d.jpg)
 
 Quick keyword searches can be run from the top right search bar. Select a search category to search by anything other than the field label.
 
 ### Service Portal
-The Service Portal tab points the user to the AngularJS scope data for each widget logged in the Service Portal Widgets sidebar. The Widget Controllers panel allows the user to have quick access to the AngularJS controller code for each widget. Here the user can debug and manipulate the widget controller script without actually making any changes to a production instance.
+The Service Portal tab points the user to the AngularJS scope data for each widget logged in the Service Portal Widgets sidebar. The Widget Controllers panel allows the user to have quick access to the AngularJS controller code for each widget. Here the user can debug and manipulate the widget controller script without actually making any changes to the instance.
 
 ![widget_controllers](https://user-images.githubusercontent.com/22809154/31272812-fac4f912-aad7-11e7-9663-7d4c80409b72.jpg)
 
