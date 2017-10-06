@@ -1,5 +1,10 @@
 function getTabId() {
-  return chrome.devtools.inspectedWindow.tabId;
+  var tabId;
+  //this loop is to avail tabId being returned as null
+  while(!tabId){
+    tabId = chrome.devtools.inspectedWindow.tabId;
+  }
+  return tabId;
 }
 
 var widgetUtil = (() => {
@@ -54,7 +59,7 @@ var widgetUtil = (() => {
       });
     },
     inspectWidget: (widgetIdentityObj) => {
-      if(widgetIdentityObj.identifier == "id") 
+      if(widgetIdentityObj.identifier == "id")
         var inspectScript = `inspect(document.getElementById("${widgetIdentityObj.idNum}"))`
       else
         var inspectScript = `inspect(document.querySelector(".${widgetIdentityObj.idNum}"))`
@@ -97,10 +102,10 @@ var widgetUtil = (() => {
   }
 })();
 
-function createNewIssue(){
+function openInNewTab(url){
   // Create a port for communication with the event page
   var port = chrome.runtime.connect({ name: "devtools-page" });
-  port.postMessage({ tabId: "", text: "createNewIssue", cmdType: "event_page", data: {} });
+  port.postMessage({ tabId: "", text: "openInNewTab", cmdType: "event_page", data: {url: url} });
 }
 
 var formUtil = (() => {
@@ -319,10 +324,12 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
 
         data.forEach(function (obj) {
           fieldHTML += `
-            <div class='col-md-12'>
-            <div class='panel panel-default fields' id=${obj.fieldName}>
+            <div class='panel panel-default fields' id=${obj.fieldName} data-fieldname='${obj.fieldName}' data-label='${obj.label}'
+              data-currentvalue='${obj.currentValue}' data-displayvalue='${obj.displayValue ? obj.displayValue : ""}'
+              data-type='${obj.type}' data-reference='${obj.reference}' data-mandatory='${obj.mandatory}'>
             <div class='panel-body propertyKey'>
             <p>Field name: <span class='propertyValue'>${obj.fieldName}</span></p>
+            <p>Label: <span class='propertyValue'>${obj.label}</span></p>
             <p>Current value: <span class='propertyValue'>${obj.currentValue}</span></p>`
           if(obj.displayValue)
             fieldHTML +=`<p>Display value: <span class='propertyValue'>${obj.displayValue}</span></p>`
@@ -332,7 +339,7 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
             <p>Table name: <span class='propertyValue'>${obj.tableName}</span></p>
             <p>Mandatory: <span class='propertyValue'>${obj.mandatory}</span></p>
             <p>Scope: <span class='propertyValue'>${obj.scope}</span></p>            
-            </div></div></div>`
+            </div></div>`
         });
         targetEl.innerHTML = fieldHTML;
       }
@@ -341,16 +348,17 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         var targetEl = _spPanelWindow.document.getElementById("variablesList");
 
         data.forEach(function (obj) {
-          variableHTML += `
-            <div class='col-md-12'>`
             if(obj.variableEditor)
-              variableHTML += `<div class='panel panel-default fields' id=${obj.Name}>`
+              variableHTML += `<div class='panel panel-default fields' id=${obj.Name}`
             else 
-              variableHTML += `<div class='panel panel-default fields' id=${obj.fieldName}>`
-            variableHTML += `
+              variableHTML += `<div class='panel panel-default fields' id=${obj.fieldName}`
+            variableHTML += ` data-name='${obj.Name}' data-fieldname='${obj.fieldName}' data-label='${obj.label}'
+              data-currentvalue='${obj.currentValue}' data-displayvalue='${obj.displayValue ? obj.displayValue : ""}'
+              data-type='${obj.type}' data-reference='${obj.reference}' data-mandatory='${obj.mandatory}'>
             <div class='panel-body propertyKey'>
             <p>Name: <span class='propertyValue'>${obj.Name}</span></p>
             <p>Field name: <span class='propertyValue'>${obj.fieldName}</span></p>
+            <p>Label: <span class='propertyValue'>${obj.label}</span></p>
             <p>Current value: <span class='propertyValue'>${obj.currentValue}</span></p>`
           if(obj.displayValue)
             variableHTML +=`<p>Display value: <span class='propertyValue'>${obj.displayValue}</span></p>`
@@ -360,7 +368,7 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
             <p>Table name: <span class='propertyValue'>${obj.tableName}</span></p>
             <p>Mandatory: <span class='propertyValue'>${obj.mandatory}</span></p>
             <p>Scope: <span class='propertyValue'>${obj.scope}</span></p>
-            </div></div></div>`
+            </div></div>`
         });
         targetEl.innerHTML = variableHTML;
       }
@@ -456,48 +464,61 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
 
       function renderServicePortalTab(){
         widgetUtil.getWidgetDetails().then((widgets) => {
-        var widgetHTML = "";
-        var targetEl = _spPanelWindow.document.getElementById("widgetsList");
+          if(widgets.length > 0){
+            var widgetHTML = "";
+            var targetEl = _spPanelWindow.document.getElementById("widgetsList");
 
-        widgets.forEach((obj, i) => {
-          if(i == 0){
-            widgetHTML += `
-              <div class="row">
-                <div class="col-md-6 widgetList">
-                  <div class="widgetBox ${obj.id ? obj.id : obj.className}" 
-                      data-identifier="${obj.identifier}" data-techname="${obj.technicalName}">
-                    <em>${obj.name}</em>
+            widgets.forEach((obj, i) => {
+              if(i == 0){
+                widgetHTML += `
+                  <div class="row">
+                    <div class="col-md-6 widgetList">
+                      <div class="widgetBox ${obj.id ? obj.id : obj.className}" 
+                          data-identifier="${obj.identifier}" data-techname="${obj.technicalName}">
+                        <em>${obj.name}</em>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" id="inspectMode">
+                        Inspect mode
+                      </label>
+                    </div>
+                  </div>`
+              } else {
+                widgetHTML += `
+                <div class="row">
+                  <div class="col-md-6 widgetList">
+                    <div class="widgetBox ${obj.id ? obj.id : obj.className}" 
+                        data-identifier="${obj.identifier}" data-techname="${obj.technicalName}">
+                      <em>${obj.name}</em>
+                    </div>
                   </div>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" id="inspectMode">
-                    Inspect mode
-                  </label>
-                </div>
-              </div>`
-          } else {
-            widgetHTML += `
-            <div class="row">
-              <div class="col-md-6 widgetList">
-                <div class="widgetBox ${obj.id ? obj.id : obj.className}" 
-                    data-identifier="${obj.identifier}" data-techname="${obj.technicalName}">
-                  <em>${obj.name}</em>
-                </div>
-              </div>
-              <div class="col-md-6"></div>
-            </div>`
+                  <div class="col-md-6"></div>
+                </div>`
+              }
+            });
+            targetEl.innerHTML = widgetHTML;
+            applyWidgetListeners();
+            var servicePortalContent = _spPanelWindow.document.getElementById("servicePortalContent")
+            servicePortalContent.style.display = "block";
           }
-        });
-        targetEl.innerHTML = widgetHTML;
-        applyWidgetListeners();
+      });
+    }
+
+      function applyScriptListeners(scriptClass){
+        var scriptBoxArray = _spPanelWindow.document.querySelectorAll(`.${scriptClass}`);
+        scriptBoxArray.forEach((scriptBox) => {
+          scriptBox.addEventListener("click", (event) => {
+            var url = event.target.dataset.url;
+            openInNewTab(url);
+          });
         });
       }
 
       function renderUiPolicies(selectedFieldName, policies){
         var uiPoliciesTab = _spPanelWindow.document.getElementById("uiPoliciesSelector");
         uiPoliciesTab.style.display = "block";
-        console.log(policies)
 
         var targetEl = _spPanelWindow.document.getElementById("policiesList");
         var policiesHTML = `<h3><strong><em>UI Policies that apply to field <span style="color: green">${selectedFieldName}</span></em></strong></h3>`;
@@ -506,11 +527,12 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
             `<div class='panel panel-default'>
               <div class='panel-body'>
                 <p>"${policy.name}"</p>
-                <p><a>${policy.url}</a></p>
+                <p><a class='uiPolicyBox' data-url='${policy.url}'>${policy.url}</a></p>
               </div>
             </div>`
         });
         targetEl.innerHTML = policiesHTML;
+        applyScriptListeners("uiPolicyBox");
       }
 
       function renderClientScripts(selectedFieldName, clientScripts){
@@ -526,11 +548,12 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
               <div class='panel-body'>
                 <p>"${clientScript.name}"</p>
                 <p>"${clientScript.type}"</p>
-                <p><a>${clientScript.url}</a></p>
+                <p><a class='clientScriptBox' data-url='${clientScript.url}'>${clientScript.url}</a></p>
               </div>
             </div>`
         });
         targetEl.innerHTML = clientScriptsHTML;
+        applyScriptListeners("clientScriptBox");
       }
 
       function renderBusinessRules(selectedFieldName, businessRules){
@@ -548,11 +571,12 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
                 <p><strong>"${businessRule.name}"</strong></p>
                 <p>When: ${businessRule.when}</p>
                 <p>For: ${businessRule.for.toString()}</p>
-                <p><a>${businessRule.url}</a></p>
+                <p><a class='businessRuleBox' data-url='${businessRule.url}'>${businessRule.url}</a></p>
               </div>
             </div>`
         });
         targetEl.innerHTML = businessRulesHTML;
+        applyScriptListeners("businessRuleBox");
       }
 
       /**
@@ -652,10 +676,29 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         formUtil.showBusinessRules(selectedFieldName).then((businessRules) => {renderBusinessRules(selectedFieldName, businessRules)});
       }, false);
 
-      // add event listeners to the hide field button
+      // add event listeners to the create issue button
       var createIssueBtn = _spPanelWindow.document.getElementById("createIssue");
       createIssueBtn.addEventListener("click", () => {
-        createNewIssue();
+        openInNewTab("https://github.com/jtandy13/SNKit/issues/new");
+      }, false);
+
+      // add event listener to the field search button
+      var fieldSearchBtn = _spPanelWindow.document.getElementById("fieldSearchBtn");
+      fieldSearchBtn.addEventListener('click', () => {
+        var searchCategory = _spPanelWindow.document.getElementById("searchCategory").selectedOptions[0].id;
+        var searchText = _spPanelWindow.document.getElementById("searchText").value;
+        var fieldPanels = _spPanelWindow.document.querySelectorAll(".fields");
+        console.log(`searchCategory = ${searchCategory}`);
+        console.log(`searchText = ${searchText}`);
+        console.log(`fieldPanels.length = ${fieldPanels.length}`);
+        fieldPanels.forEach((fieldPanel) => {
+          if (fieldPanel.dataset[searchCategory].toUpperCase().includes(searchText.toUpperCase())) {
+            //console.log("found it! " + fieldPanel.id);
+            fieldPanel.style.display = "block";
+          } else {
+            fieldPanel.style.display = "none";
+          }
+        })
       }, false);
 
     }).catch((e) => {

@@ -11,9 +11,6 @@
       /*.gridDebug{
         border: solid red 1px;
       }*/
-      .searchBar{
-        margin-top: 15px;
-      }
       .selectedField{
         background: #e6e6e6;
         border-color: #881391;
@@ -52,6 +49,15 @@
         margin-bottom: 40px;
       }
       .issueLink:hover{
+        cursor: pointer;
+      }
+      .uiPolicyBox:hover{
+        cursor: pointer;
+      }
+      .clientScriptBox:hover{
+        cursor: pointer;
+      }
+      .businessRuleBox:hover{
         cursor: pointer;
       }
     </style>
@@ -116,47 +122,36 @@
               <button id="showReferenceBtn" class="btn btn-default">Evaluate reference in console</button>
             </div>
           </div>
-          <div class="gridDebug col-md-4">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="gridDebug col-xs-2">
-                  <h3><strong><em>Fields</em></strong></h3>
-                </div>
-                <div class="gridDebug col-xs-2"></div>
-                <div class="gridDebug col-xs-8">
+          <div class="gridDebug col-md-10">
+            <div class="row">
+              <div class="col-md-7"></div>
+              <div class="col-md-5">
+                <div class="form-inline">
+                  <label for="searchCategory">Search Category:</label>
+                  <select class="form-control" id="searchCategory">
+                    <option id="label">Label</option>
+                    <option id="fieldname">Field Name</option>
+                    <option id="name">Name (variables only)</option>
+                    <option id="type">Type</option>
+                    <option id="mandatory">Mandatory</option>
+                  </select>
                   <div class="input-group searchBar">
                     <input type="text" class="form-control" id="searchText" placeholder="Search for...">
                     <span class="input-group-btn">
                       <button class="btn btn-default" type="button" id="fieldSearchBtn">Go!</button>
-                  </span>
-                  </div>
-                  <!-- /input-group -->
-                </div>
-              </div>
-            </div>
-            <div id="fieldsList"></div>
-          </div>
-          <div class="gridDebug col-md-4">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="gridDebug col-xs-2">
-                  <h3><strong><em>Variables</em></strong></h3>
-                </div>
-                <div class="gridDebug col-xs-2"></div>
-                <div class="gridDebug col-xs-8">
-                  <div class="input-group searchBar">
-                    <input type="text" class="form-control" id="searchText" placeholder="Search for...">
-                    <span class="input-group-btn">
-                      <button class="btn btn-default" type="button" id="variableSearchBtn">Go!</button>
                     </span>
                   </div>
-                  <!-- /input-group -->
                 </div>
               </div>
+              <div class="col-md-6">
+                <h3><strong><em>Fields</em></strong></h3>
+                <div id="fieldsList"></div>
+              </div>
+              <div class="col-md-6">
+                <h3><strong><em>Variables</em></strong></h3>
+                <div id="variablesList"></div>
+              </div>
             </div>
-            <div id="variablesList"></div>
-          </div>
-          <div class="gridDebug col-md-2">
           </div>
         </div>
       </div>
@@ -199,7 +194,7 @@
     <!-- End Business Rules -->
     <!-- Begin Service Portal -->
     <div class="tab-pane" id="servicePortalTab" role="tabpanel">
-      <div class="container-fluid">
+      <div class="container-fluid" id="servicePortalContent" style="display: none">
         <div class="row">
           <div class="col-md-6">
             <div class="row">

@@ -9,8 +9,8 @@ chrome.runtime.onConnect.addListener(function(port) {
     thisPort.onMessage.addListener(function(message) {
       Object.keys(message).map((e) => console.log(`key=${e}  value=${message[e]}`));
       if (message.cmdType == "event_page") {
-        if (message.text == "createNewIssue") {
-          chrome.tabs.create({ url: "https://github.com/jtandy13/SNKit/issues/new" });
+        if (message.text == "openInNewTab") {
+          chrome.tabs.create({ url: message.data.url });
         }
       } else {
         chrome.tabs.sendMessage(message.tabId,

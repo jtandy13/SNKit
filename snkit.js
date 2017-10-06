@@ -46,6 +46,7 @@ function getStandardFormProperties(targetWin, callback) {
     fields.forEach((field, i) => {
       var detailObj = {};
       detailObj.fieldName = fields[i].fieldName;
+      detailObj.label = targetWin.g_form.getLabelOf(fields[i].fieldName);
       detailObj.isInherited = fields[i].isInherited;
       detailObj.mandatory = fields[i].mandatory;
       detailObj.reference = fields[i].reference;
@@ -119,6 +120,7 @@ function getCatItemProperties(targetWin, callback) {
     fields.forEach((field, i) => {
       var fieldDetailObj = {};
       fieldDetailObj.fieldName = fields[i].fieldName;
+      fieldDetailObj.label = targetWin.g_form.getLabelOf(fields[i].fieldName);
       fieldDetailObj.isInherited = fields[i].isInherited;
       fieldDetailObj.mandatory = fields[i].mandatory;
       fieldDetailObj.reference = fields[i].reference;
