@@ -371,6 +371,14 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
           variablesLabel.style.display = "block";
         }
       }
+
+      function hideScriptSearchTabs() {
+        var scriptSearchTabs = _spPanelWindow.document.querySelectorAll(".scriptSearchTab");
+        scriptSearchTabs.forEach((tab) => {
+          tab.style.display = "none";
+        })
+      }
+
       function makeFieldsSelectable() {
         var fieldsArray = _spPanelWindow.document.querySelectorAll(".fields");
         fieldsArray.forEach((field) => {
@@ -390,6 +398,8 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
                 } else {
                   el.classList.add("selectedField");
                   el.classList.add("remainSelected");
+                  // If the panel is newly selected, hide any showing script search tabs
+                  hideScriptSearchTabs();
                   break;
                 }
               }
