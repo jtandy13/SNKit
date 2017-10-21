@@ -8,7 +8,7 @@ injection.onload = () => {
 
 //Create a custom DOM event for communication with the page
 function sendCmd(cmd, cmdData) {
-    var cmdEvent = new CustomEvent('myCmdEvent', {detail: { cmd: cmd, cmdData: cmdData } });
+    var cmdEvent = new CustomEvent('snkitRequest', {detail: { cmd: cmd, cmdData: cmdData } });
     window.dispatchEvent(cmdEvent);
 }
 

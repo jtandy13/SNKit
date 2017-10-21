@@ -36,35 +36,7 @@ function getParentTable() {
   })
 }
 
-function getStandardFormProperties(targetWin, callback) {
-  var parentTable;
-  getParentTable().then((name) => {
-    parentTable = name;
-    var fieldDetails = [];
-    var fields = targetWin.g_form.elements;
-    fields.forEach((field, i) => {
-      var detailObj = {};
-      detailObj.fieldName = fields[i].fieldName;
-      detailObj.label = targetWin.g_form.getLabelOf(fields[i].fieldName);
-      detailObj.isInherited = fields[i].isInherited;
-      detailObj.mandatory = fields[i].mandatory;
-      detailObj.reference = fields[i].reference;
-      detailObj.scope = fields[i].scope;
-      if(fields[i].isInherited) {
-        detailObj.tableName = parentTable;
-      } else {
-        detailObj.tableName = fields[i].tableName;
-      }
-      detailObj.type = fields[i].type;
-      detailObj.currentValue = targetWin.g_form.getValue(detailObj.fieldName);
-      fieldDetails.push(detailObj);
-    });
-    alphaSortDataObject("fieldName", fieldDetails)
-      .then(callback({fieldDetails: fieldDetails}));
-  });
-}
-
-function getCatItemProperties(targetWin, callback) {
+function getFormFields(targetWin, callback) {
   var fieldDetails = [];
   var variableDetails = [];
   var fields = [];
@@ -145,23 +117,10 @@ function getCatItemProperties(targetWin, callback) {
 function getFormProperties(callback) {
   var fieldDetails = [];
   var targetWin = getTargetWindow();
-
-  //if the nameMap property is populated, then there are variables
-  try {
-    if(targetWin.g_form.nameMap.length > 0){
-      getCatItemProperties(targetWin, (data) => { 
-        fieldDetails = data;
-        callback(fieldDetails);
-      });
-    } else {
-      getStandardFormProperties(targetWin, (data) => {
-        fieldDetails = data; 
-        callback(fieldDetails);
-      });
-    }
-  } catch(e) {
-    return;
-  }
+  getFormFields(targetWin, (data) => {
+    fieldDetails = data;
+    callback(fieldDetails);
+  });
 }
 
 function clearValue(fieldName, callback) {
@@ -317,7 +276,7 @@ function showBusinessRules(fieldName, callback) {
   }).then(() => { callback(targetBusinessRules) });
 }
 
-window.addEventListener("myCmdEvent", function(event) {
+window.addEventListener("snkitRequest", function(event) {
   var cmd = event.detail.cmd;
   var cmdData = event.detail.cmdData;
   if (cmd === "getFormProperties"){
