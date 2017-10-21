@@ -335,6 +335,7 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
           targetEl.innerHTML = fieldHTML;
           var fieldsLabel = _spPanelWindow.document.getElementById("fieldsLabel")
           fieldsLabel.style.display = "block";
+          showFormPanelComponents();
         }
       }
 
@@ -369,7 +370,15 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
           targetEl.innerHTML = variableHTML;
           var variablesLabel = _spPanelWindow.document.getElementById("variablesLabel")
           variablesLabel.style.display = "block";
+          showFormPanelComponents();
         }
+      }
+
+      function showFormPanelComponents() {
+        var formPanelComps = _spPanelWindow.document.querySelectorAll("#formFunctionsBtnGroup, #searchForm");
+        formPanelComps.forEach((comp) => {
+          comp.style.display = "block";
+        })
       }
 
       function hideScriptSearchTabs() {
