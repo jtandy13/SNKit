@@ -46,9 +46,9 @@ function getFormFields(targetWin, callback) {
   var hasVariableEditor = targetWin.g_form.prefixHandlers.variables ? true : false;
   //separate the fields and variables into separate arrays for catalog items
   formElements.forEach((elem, i) => {
-    if (elem.tableName == "variable" && !elem.fieldName.startsWith("ni.")){
+    if (elem.tableName == "variable" && !elem.fieldName.startsWith("ni.")) {
       variables.push(elem);
-    } else if(!elem.fieldName.startsWith("ni.")){
+    } else if (!elem.fieldName.startsWith("ni.")) {
       fields.push(elem);
     }
   });
@@ -56,8 +56,8 @@ function getFormFields(targetWin, callback) {
   variables.forEach((variable, i) => {
     var varObj = {};
     varObj.fieldName = variables[i].fieldName;
-    for(let i = 0; i < nameMapClone.length; i++) {
-      if(varObj.fieldName == nameMapClone[i].realName){
+    for (let i = 0; i < nameMapClone.length; i++) {
+      if (varObj.fieldName == nameMapClone[i].realName) {
         varObj.Name = nameMapClone[i].prettyName;
         varObj.label = nameMapClone[i].label;
         break;
@@ -70,7 +70,7 @@ function getFormFields(targetWin, callback) {
     varObj.type = variables[i].type;
     varObj.variableEditor = hasVariableEditor;
     //if this is a reference field, then we need to get the display value as well
-    if(varObj.reference != "null" && hasVariableEditor)
+    if (varObj.reference != "null" && hasVariableEditor)
       varObj.displayValue = targetWin.g_form.getDisplayBox("ni.VE" + varObj.fieldName).value;
     else if (varObj.reference != "null")
       varObj.displayValue = targetWin.g_form.getDisplayBox(varObj.fieldName).value;
@@ -78,7 +78,7 @@ function getFormFields(targetWin, callback) {
      * Check if the variable is part of a variable editor.
      * If not, the value can be obtained using the fieldName
      */
-    if(hasVariableEditor)
+    if (hasVariableEditor)
       varObj.currentValue = targetWin.g_form.getValue("ni.VE" + varObj.fieldName);
     else
       varObj.currentValue = targetWin.g_form.getValue(varObj.fieldName);
@@ -96,7 +96,7 @@ function getFormFields(targetWin, callback) {
       fieldDetailObj.mandatory = fields[i].mandatory;
       fieldDetailObj.reference = fields[i].reference;
       fieldDetailObj.scope = fields[i].scope;
-      if(fields[i].isInherited) {
+      if (fields[i].isInherited) {
         fieldDetailObj.tableName = parentTable;
       } else {
         fieldDetailObj.tableName = fields[i].tableName;
@@ -109,18 +109,21 @@ function getFormFields(targetWin, callback) {
     });
     alphaSortDataObject("fieldName", fieldDetails)
       .then(alphaSortDataObject("Name", variableDetails))
-      .then(callback({fieldDetails: fieldDetails, variableDetails: variableDetails}));
-  /*alphaSortDataObject("label", fieldDetails)
-    .then(callback(fieldDetails));*/
+      .then(callback({ fieldDetails: fieldDetails, variableDetails: variableDetails }));
+    /*alphaSortDataObject("label", fieldDetails)
+      .then(callback(fieldDetails));*/
   });
 }
+
 function getFormProperties(callback) {
   var fieldDetails = [];
   var targetWin = getTargetWindow();
-  getFormFields(targetWin, (data) => {
-    fieldDetails = data;
-    callback(fieldDetails);
-  });
+  if (targetWin) {
+    getFormFields(targetWin, (data) => {
+      fieldDetails = data;
+      callback(fieldDetails);
+    });
+  }
 }
 
 function clearValue(fieldName, callback) {
@@ -206,6 +209,10 @@ function getWidgetDetails(callback) {
   })
   //TODO: alphsort details object
   callback(details);
+}
+
+function isServicePortalPage(callback) {
+  callback(window.NOW.hasOwnProperty("sp"));
 }
 
 function showUiPolicies(fieldName, callback) {
@@ -311,6 +318,11 @@ window.addEventListener("snkitRequest", function(event) {
     })
   } else if (cmd === "getWidgetDetails"){
     getWidgetDetails((data) => {
+      // send the data back to the content script
+      window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
+    });
+  } else if (cmd === "isServicePortalPage"){
+    isServicePortalPage((data) => {
       // send the data back to the content script
       window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
     });

@@ -7,6 +7,21 @@ function getTabId() {
   return tabId;
 }
 
+function isServicePortalPage() {
+  // Create a port for communication with the event page
+  var port = chrome.runtime.connect({ name: "devtools-page" });
+  return new Promise((resolve, reject) => {
+    port.postMessage({ tabId: getTabId(), text: "isServicePortalPage", cmdType: "page", data: {} });
+    port.onMessage.addListener((data) => {
+      if (data.type == "EVENT_PAGE" && data.cmd == "isServicePortalPage") {
+        console.log(data.content);
+        port.disconnect();
+        resolve(data.content);
+      }
+    });
+  });
+}
+
 var widgetUtil = (() => {
   return {
     getWidgetProperties: () => {
@@ -44,7 +59,7 @@ var widgetUtil = (() => {
       });
       return widgetScopes;
     },
-    getWidgetDetails: (fieldName, mandatory) => {
+    getWidgetDetails: () => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({ name: "devtools-page" });
       return new Promise((resolve, reject) => {
@@ -247,7 +262,7 @@ var formUtil = (() => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showBusinessRules"){
             port.disconnect();
             if(data.content) resolve(data.content);
-            else reject();
+            else reject(reason);
           }
         });
       });
@@ -259,25 +274,38 @@ var sidebarUtil = (() => {
   var _widgetSidebar;
   var _formSidebar;
   return {
+    /**
+     * The widget scopes cannot be sourced from querying the page becuase
+     * of issues with deep cloning an object that contains functions and circular
+     * structures. See Stack Overflow questions below:
+     * https://stackoverflow.com/questions/11616630/json-stringify-avoid-typeerror-converting-circular-structure-to-json
+     * https://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript?rq=1
+     */
     renderWidgetSidebarPanel: () => {
-      // Create the new sidepanel for the elements pane
-      chrome.devtools.panels.elements.createSidebarPane(
-        "Service Portal Widget Scopes",
-        (sidebar) => {
-          _widgetSidebar = sidebar;
-          sidebar.setExpression("(" + widgetUtil.getWidgetProperties.toString() + ")()", "Service Portal Widgets");
-      });
+      return new Promise((resolve, reject) => {
+        isServicePortalPage().then((answer) => {
+          if (answer) {
+            // Create the new sidepanel for the elements pane
+            chrome.devtools.panels.elements.createSidebarPane(
+              "Service Portal Widget Scopes",
+              (sidebar) => {
+                sidebar.setExpression("(" + widgetUtil.getWidgetProperties.toString() + ")()", "Service Portal Widgets");
+              });
+          }
+          resolve();
+        })
+      })
     },
     renderFormSidebarPanel: () => {
       formUtil.getFieldProperties().then((data) => {
-        if (data.fieldDetails) {
+        if (data.fieldDetails.length > 0) {
           chrome.devtools.panels.elements.createSidebarPane(
             "ServiceNow Form Fields",
             (sidebar) => {
               sidebar.setObject(data.fieldDetails, "ServiceNow Form Fields");
           });
         }
-        if (data.variableDetails) {
+        if (data.variableDetails.length > 0) {
           chrome.devtools.panels.elements.createSidebarPane(
             "ServiceNow Form Variables",
             (sidebar) => {
@@ -286,15 +314,16 @@ var sidebarUtil = (() => {
         }
       })
     },
-    refreshSidebar: () => {
+    /*refreshSidebar: () => {
       _widgetSidebar.setExpression("(" + widgetUtil.getWidgetProperties.toString() + ")()", "Service Portal Widgets");
-    }
+    }*/
   }
 })();
 
 // Create the initial sidebarPanels
-sidebarUtil.renderWidgetSidebarPanel();
-sidebarUtil.renderFormSidebarPanel();
+sidebarUtil.renderWidgetSidebarPanel().then(() => {
+  sidebarUtil.renderFormSidebarPanel();
+})
 
 chrome.devtools.panels.create("SNKit", "", "snkit.html",
   (spPanel) => {
