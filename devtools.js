@@ -260,6 +260,9 @@ var sidebarUtil = (() => {
               "Service Portal Widget Scopes",
               (sidebar) => {
                 sidebar.setExpression("(" + widgetUtil.getWidgetProperties.toString() + ")()", "Service Portal Widgets");
+                sidebar.onShown.addListener(() => {
+                  sidebar.setExpression("(" + widgetUtil.getWidgetProperties.toString() + ")()", "Service Portal Widgets");
+                });
               });
           }
           resolve();
@@ -273,17 +276,34 @@ var sidebarUtil = (() => {
             "ServiceNow Form Fields",
             (sidebar) => {
               sidebar.setObject(data.fieldDetails, "ServiceNow Form Fields");
-          });
+              sidebar.onShown.addListener(() => {
+                formUtil.getFieldProperties().then((data) => {
+                  sidebar.setObject(data.fieldDetails, "ServiceNow Form Fields");
+                });
+              });
+            });
         }
         if (data.variableDetails.length > 0) {
           chrome.devtools.panels.elements.createSidebarPane(
             "ServiceNow Form Variables",
             (sidebar) => {
               sidebar.setObject(data.variableDetails, "ServiceNow Form Variables");
-          });
+              sidebar.onShown.addListener(() => {
+                formUtil.getFieldProperties().then((data) => {
+                  sidebar.setObject(data.variableDetails, "ServiceNow Form Variables");
+                });
+              });
+            });
         }
       })
     },
+    /*renderSNkitSidebarRefreshPanel: () => {
+      chrome.devtools.panels.elements.createSidebarPane("SNKit refresh",
+        (sidebar) => {
+          sidebar.setPage("refreshSidebar.html");
+          sidebar.setHeight("8ex");
+        });
+    }*/
     /*refreshSidebar: () => {
       _widgetSidebar.setExpression("(" + widgetUtil.getWidgetProperties.toString() + ")()", "Service Portal Widgets");
     }*/
