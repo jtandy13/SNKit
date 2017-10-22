@@ -32,11 +32,11 @@ The SNKit panel allows access to tabular information regarding either the form o
 ### Forms
 The Forms tab allows for field and variable manipulation through the first four buttons (some are drop downs with multiple functions) on the left-side menu. Simply select the form or variable that you are interested in and apply the function to it on the left. 
 
-![form_tab](https://user-images.githubusercontent.com/22809154/31272536-0933306e-aad7-11e7-8e1b-da51f316547f.jpg)
+![form_tab](https://user-images.githubusercontent.com/22809154/31866886-95fb10c8-b7d1-11e7-9c1c-ad1362ea354b.jpg)
 
 Underneath the field manipulation functions are four extra functions used for analysis. Client Scripts, UI Policies, and Business Rules of the current table can be searched for any reference of the selected field or variable. Search results will appear in their own tab. The "Evaluate reference in console" function send the complete GlideRecord of the reference to the console to inspect.
 
-![client_scripts_search](https://user-images.githubusercontent.com/22809154/31272608-4c8c0340-aad7-11e7-9812-f63691868c0d.jpg)
+![client_scripts_search](https://user-images.githubusercontent.com/22809154/31866922-e93798d8-b7d1-11e7-8943-4db203cd1b8a.jpg)
 
 Quick keyword searches can be run from the top right search bar. Select a search category to search by anything other than the field label.
 
