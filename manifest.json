@@ -1,7 +1,7 @@
 {
   "name": "SNKit",
-  "version": "0.0.0",
-  "description": "Extends the chrome devtools by adding functions relevant to ServiceNow.",
+  "version": "1.0.0",
+  "description": "Chrome Developer Tools extension for ServiceNow.",
   "devtools_page": "devtools.html",
   "manifest_version": 2,
   "permissions": [
