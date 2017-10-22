@@ -296,17 +296,7 @@ var sidebarUtil = (() => {
             });
         }
       })
-    },
-    /*renderSNkitSidebarRefreshPanel: () => {
-      chrome.devtools.panels.elements.createSidebarPane("SNKit refresh",
-        (sidebar) => {
-          sidebar.setPage("refreshSidebar.html");
-          sidebar.setHeight("8ex");
-        });
-    }*/
-    /*refreshSidebar: () => {
-      _widgetSidebar.setExpression("(" + widgetUtil.getWidgetProperties.toString() + ")()", "Service Portal Widgets");
-    }*/
+    }
   }
 })();
 
@@ -330,7 +320,6 @@ var snkitUtil = (() => {
         port.postMessage({ tabId: snkitUtil.getTabId(), text: "isServicePortalPage", cmdType: "page", data: {} });
         port.onMessage.addListener((data) => {
           if (data.type == "EVENT_PAGE" && data.cmd == "isServicePortalPage") {
-            console.log(data.content);
             port.disconnect();
             resolve(data.content);
           }
@@ -482,12 +471,14 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         });
       }
 
-      formUtil.getFieldProperties().then((data) => {
-        if(data.fieldDetails)
-          renderFieldsAnalysis(data.fieldDetails);
-        if(data.variableDetails)
-          renderVariablesAnalysis(data.variableDetails);
-      }).then(() => { makeFieldsSelectable() });
+      function renderFormFieldsTab() {
+          formUtil.getFieldProperties().then((data) => {
+          if(data.fieldDetails)
+            renderFieldsAnalysis(data.fieldDetails);
+          if(data.variableDetails)
+            renderVariablesAnalysis(data.variableDetails);
+        }).then(() => { makeFieldsSelectable() });
+      }
 
       function getSelectedFieldName() {
         return _spPanelWindow.document.querySelector(".selectedField").id;
@@ -653,11 +644,19 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
        * Bootstrap tab changes are difficult to react to without JQuery,
        * so the MutationObserver class will be used instead of addEventListener.
        */
-      var observer = new MutationObserver((mutations) => {
+      var spTabObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           //Once the Service Portal tab becomes active, take action
           if(mutation.target.className == "tab-pane active")
             renderServicePortalTab();
+        });
+      });
+
+      var ffTabObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          //Once the Service Portal tab becomes active, take action
+          if(mutation.target.className == "tab-pane active")
+            renderFormFieldsTab();
         });
       });
 
@@ -668,8 +667,29 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         attributeOldValue: true
       };
 
-      var targetNode = _spPanelWindow.document.getElementById("servicePortalTab");
-      observer.observe(targetNode, observerConfig);
+      var spTabTargetNode = _spPanelWindow.document.getElementById("servicePortalTab");
+      spTabObserver.observe(spTabTargetNode, observerConfig);
+
+      var ffTabTargetNode = _spPanelWindow.document.getElementById("formFieldsTab");
+      ffTabObserver.observe(ffTabTargetNode, observerConfig);
+
+      /**
+       * Since the tabs are rendered when they are shown, we need to set the active tab
+       * based on the page context. For now we can use the isServicePortalPage function.
+       */
+      snkitUtil.isServicePortalPage().then((answer) => {
+        if (answer) {
+          var spTabTargetNodes = _spPanelWindow.document.querySelectorAll("#servicePortalTab, #spTabListItem");
+          spTabTargetNodes.forEach((node) => {
+            node.classList.add("active")
+          });
+        } else {
+          var ffTabTargetNodes = _spPanelWindow.document.querySelectorAll("#formFieldsTab, #ffTabListItem");
+          ffTabTargetNodes.forEach((node) => {
+            node.classList.add("active")
+          });
+        }
+      });
 
       // add event listeners to the clearValue button
       var clearValueBtn = _spPanelWindow.document.getElementById("clearValueBtn");
