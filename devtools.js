@@ -1,27 +1,3 @@
-function getTabId() {
-  var tabId;
-  //this loop is to avail tabId being returned as null
-  while(!tabId){
-    tabId = chrome.devtools.inspectedWindow.tabId;
-  }
-  return tabId;
-}
-
-function isServicePortalPage() {
-  // Create a port for communication with the event page
-  var port = chrome.runtime.connect({ name: "devtools-page" });
-  return new Promise((resolve, reject) => {
-    port.postMessage({ tabId: getTabId(), text: "isServicePortalPage", cmdType: "page", data: {} });
-    port.onMessage.addListener((data) => {
-      if (data.type == "EVENT_PAGE" && data.cmd == "isServicePortalPage") {
-        console.log(data.content);
-        port.disconnect();
-        resolve(data.content);
-      }
-    });
-  });
-}
-
 var widgetUtil = (() => {
   return {
     getWidgetProperties: () => {
@@ -63,7 +39,7 @@ var widgetUtil = (() => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({ name: "devtools-page" });
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "getWidgetDetails", cmdType: "page", data: {} });
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "getWidgetDetails", cmdType: "page", data: {} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "getWidgetDetails"){
             port.disconnect();
@@ -84,7 +60,7 @@ var widgetUtil = (() => {
     highlightWidget: (widgetIdentityObj) => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({ name: "devtools-page" });
-      port.postMessage({ tabId: getTabId(), text: "highlightWidget", cmdType: "content_script", 
+      port.postMessage({ tabId: snkitUtil.getTabId(), text: "highlightWidget", cmdType: "content_script", 
         data: {idNum: widgetIdentityObj.idNum, identifier: widgetIdentityObj.identifier} });
       port.onMessage.addListener((data) => {
         if(data.type == "EVENT_PAGE" && data.cmd == "highlightWidget"){
@@ -95,7 +71,7 @@ var widgetUtil = (() => {
     removeWidgetHighlight: (widgetIdentityObj) => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({ name: "devtools-page" });
-      port.postMessage({ tabId: getTabId(), text: "removeWidgetHighlight", cmdType: "content_script", 
+      port.postMessage({ tabId: snkitUtil.getTabId(), text: "removeWidgetHighlight", cmdType: "content_script", 
         data: {idNum: widgetIdentityObj.idNum, identifier: widgetIdentityObj.identifier} });
       port.onMessage.addListener((data) => {
         if(data.type == "EVENT_PAGE" && data.cmd == "removeWidgetHighlight"){
@@ -116,19 +92,13 @@ var widgetUtil = (() => {
   }
 })();
 
-function openInNewTab(url){
-  // Create a port for communication with the event page
-  var port = chrome.runtime.connect({ name: "devtools-page" });
-  port.postMessage({ tabId: "", text: "openInNewTab", cmdType: "event_page", data: {url: url} });
-}
-
 var formUtil = (() => {
   return {
     getFieldProperties: () => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({name: "devtools-page"});
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "getFormProperties", cmdType: "page", data: {} });
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "getFormProperties", cmdType: "page", data: {} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "getFormProperties"){
             port.disconnect();
@@ -142,7 +112,7 @@ var formUtil = (() => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({ name: "devtools-page" });
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "clearValue", cmdType: "page", data: {fieldName: fieldName} });
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "clearValue", cmdType: "page", data: {fieldName: fieldName} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "clearValue"){
             port.disconnect();
@@ -156,7 +126,7 @@ var formUtil = (() => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({ name: "devtools-page" });
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "enableDisableField", cmdType: "page", 
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "enableDisableField", cmdType: "page", 
           data: {fieldName: fieldName, disable: disable} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "enableDisableField"){
@@ -171,7 +141,7 @@ var formUtil = (() => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({ name: "devtools-page" });
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "setRemoveMandatory", cmdType: "page", 
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "setRemoveMandatory", cmdType: "page", 
           data: {fieldName: fieldName, mandatory: mandatory} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "setRemoveMandatory"){
@@ -186,7 +156,7 @@ var formUtil = (() => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({ name: "devtools-page" });
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "showHideField", cmdType: "page", 
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "showHideField", cmdType: "page", 
           data: {fieldName: fieldName, show: show} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showHideField"){
@@ -201,7 +171,7 @@ var formUtil = (() => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({name: "devtools-page"});
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "showAllHiddenFields", cmdType: "page", data: {fieldDetails: fieldDetails} });
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "showAllHiddenFields", cmdType: "page", data: {fieldDetails: fieldDetails} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showAllHiddenFields"){
             port.disconnect();
@@ -215,7 +185,7 @@ var formUtil = (() => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({name: "devtools-page"});
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "showReference", cmdType: "page", data: {fieldName: fieldName} });
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "showReference", cmdType: "page", data: {fieldName: fieldName} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showReference"){
             port.disconnect();
@@ -229,7 +199,7 @@ var formUtil = (() => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({name: "devtools-page"});
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "showUiPolicies", cmdType: "page", data: {fieldName: fieldName} });
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "showUiPolicies", cmdType: "page", data: {fieldName: fieldName} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showUiPolicies"){
             port.disconnect();
@@ -243,7 +213,7 @@ var formUtil = (() => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({name: "devtools-page"});
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "showClientScripts", cmdType: "page", data: {fieldName: fieldName} });
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "showClientScripts", cmdType: "page", data: {fieldName: fieldName} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showClientScripts"){
             port.disconnect();
@@ -257,7 +227,7 @@ var formUtil = (() => {
       // Create a port for communication with the event page
       var port = chrome.runtime.connect({name: "devtools-page"});
       return new Promise((resolve, reject) => {
-        port.postMessage({ tabId: getTabId(), text: "showBusinessRules", cmdType: "page", data: {fieldName: fieldName} });
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "showBusinessRules", cmdType: "page", data: {fieldName: fieldName} });
         port.onMessage.addListener((data) => {
           if(data.type == "EVENT_PAGE" && data.cmd == "showBusinessRules"){
             port.disconnect();
@@ -283,7 +253,7 @@ var sidebarUtil = (() => {
      */
     renderWidgetSidebarPanel: () => {
       return new Promise((resolve, reject) => {
-        isServicePortalPage().then((answer) => {
+        snkitUtil.isServicePortalPage().then((answer) => {
           if (answer) {
             // Create the new sidepanel for the elements pane
             chrome.devtools.panels.elements.createSidebarPane(
@@ -320,10 +290,45 @@ var sidebarUtil = (() => {
   }
 })();
 
-// Create the initial sidebarPanels
-sidebarUtil.renderWidgetSidebarPanel().then(() => {
-  sidebarUtil.renderFormSidebarPanel();
-})
+var snkitUtil = (() => {
+  return {
+    createSidebarPanels: () => {
+      // Create or recreate the sidebarPanels
+      sidebarUtil.renderWidgetSidebarPanel().then(() => {
+        sidebarUtil.renderFormSidebarPanel();
+      });
+    },
+    openInNewTab: (url) => {
+      // Create a port for communication with the event page
+      var port = chrome.runtime.connect({ name: "devtools-page" });
+      port.postMessage({ tabId: "", text: "openInNewTab", cmdType: "event_page", data: { url: url } });
+    },
+    isServicePortalPage: () => {
+      // Create a port for communication with the event page
+      var port = chrome.runtime.connect({ name: "devtools-page" });
+      return new Promise((resolve, reject) => {
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "isServicePortalPage", cmdType: "page", data: {} });
+        port.onMessage.addListener((data) => {
+          if (data.type == "EVENT_PAGE" && data.cmd == "isServicePortalPage") {
+            console.log(data.content);
+            port.disconnect();
+            resolve(data.content);
+          }
+        });
+      });
+    },
+    getTabId: () => {
+      var tabId;
+      //this loop is to avail tabId being returned as null
+      while (!tabId) {
+        tabId = chrome.devtools.inspectedWindow.tabId;
+      }
+      return tabId;
+    }
+  }
+})();
+
+snkitUtil.createSidebarPanels();
 
 chrome.devtools.panels.create("SNKit", "", "snkit.html",
   (spPanel) => {
@@ -558,7 +563,7 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         scriptBoxArray.forEach((scriptBox) => {
           scriptBox.addEventListener("click", (event) => {
             var url = event.target.dataset.url;
-            openInNewTab(url);
+            snkitUtil.openInNewTab(url);
           });
         });
       }
@@ -732,7 +737,7 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
       // add event listeners to the create issue button
       var createIssueBtn = _spPanelWindow.document.getElementById("createIssue");
       createIssueBtn.addEventListener("click", () => {
-        openInNewTab("https://github.com/jtandy13/SNKit/issues/new");
+        snkitUtil.openInNewTab("https://github.com/jtandy13/SNKit/issues/new");
       }, false);
 
       // add event listener to the field search button
