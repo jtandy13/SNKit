@@ -326,6 +326,19 @@ var snkitUtil = (() => {
         });
       });
     },
+    isFormPage: () => {
+      // Create a port for communication with the event page
+      var port = chrome.runtime.connect({ name: "devtools-page" });
+      return new Promise((resolve, reject) => {
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "isFormPage", cmdType: "page", data: {} });
+        port.onMessage.addListener((data) => {
+          if (data.type == "EVENT_PAGE" && data.cmd == "isFormPage") {
+            port.disconnect();
+            resolve(data.content);
+          }
+        });
+      });
+    },
     getTabId: () => {
       var tabId;
       //this loop is to avail tabId being returned as null

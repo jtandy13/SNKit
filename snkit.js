@@ -187,7 +187,7 @@ var SNKit = (() => {
         targetWin = document.getElementById('gsft_main').contentWindow
         return targetWin;
       } else {
-        return;
+        return window;
       }
     },
     getWidgetDetails: (callback) => {
@@ -212,6 +212,9 @@ var SNKit = (() => {
     },
     isServicePortalPage: (callback) => {
       callback(window.NOW.hasOwnProperty("sp"));
+    },
+    isFormPage: (callback) => {
+      callback(SNKit.getTargetWindow().hasOwnProperty("g_form"));
     },
     showUiPolicies: (fieldName, callback) => {
       var targetWindow = SNKit.getTargetWindow()
@@ -307,13 +310,7 @@ var snkit_api = (() => {
 
       spWidgets.forEach((widget, i) => {
         var thisScope = angular.element(spWidgets[i]).scope();
-        var scopeCopy = {};
-        for(var property in thisScope) {
-          if(property.charAt(0) !== "$" || property === "$root") {
-              scopeCopy[property] = thisScope[property];
-          }
-        }
-        widgetScopes.push(scopeCopy);
+        widgetScopes.push(thisScope);
       });
 
       if(_widgetName) {
@@ -434,6 +431,11 @@ window.addEventListener("snkitRequest", function(event) {
     });
   } else if (cmd === "isServicePortalPage"){
     SNKit.isServicePortalPage((data) => {
+      // send the data back to the content script
+      window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
+    });
+  } else if (cmd === "isFormPage"){
+    SNKit.isFormPage((data) => {
       // send the data back to the content script
       window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
     });
