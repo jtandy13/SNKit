@@ -5,7 +5,6 @@ var SNKit = (() => {
       var targetWin = SNKit.getTargetWindow();
       targetWin.g_form.clearValue(fieldName);
       callback();
-      SNKit.consoleLog();
     },
     alphaSortDataObject: (propName, dataObj) => {
       return new Promise((resolve, reject) => {
@@ -41,40 +40,26 @@ var SNKit = (() => {
             resolve(gr.name);
           });
         });
-      })
-    },
-    getFormFields: (targetWin, callback) => {
-      var fieldDetails = [];
-      var variableDetails = [];
-      var fields = [];
-      var variables = [];
-      var formElements = targetWin.g_form.elements;
-      var nameMapClone = targetWin.g_form.nameMap;
-      var hasVariableEditor = targetWin.g_form.prefixHandlers.variables ? true : false;
-      //separate the fields and variables into separate arrays for catalog items
-      formElements.forEach((elem, i) => {
-        if (elem.tableName == "variable" && !elem.fieldName.startsWith("ni.")) {
-          variables.push(elem);
-        } else if (!elem.fieldName.startsWith("ni.")) {
-          fields.push(elem);
-        }
       });
-      //collect the variable properties
-      variables.forEach((variable, i) => {
+    },
+    collectVariableMetadata: (variablesArray, nameMap, targetWin) => {
+      var variableDetails = [];
+      var hasVariableEditor = targetWin.g_form.prefixHandlers.variables ? true : false;
+      variablesArray.forEach((variable, i) => {
         var varObj = {};
-        varObj.fieldName = variables[i].fieldName;
-        for (let i = 0; i < nameMapClone.length; i++) {
-          if (varObj.fieldName == nameMapClone[i].realName) {
-            varObj.Name = nameMapClone[i].prettyName;
-            varObj.label = nameMapClone[i].label;
+        varObj.fieldName = variablesArray[i].fieldName;
+        for (let i = 0; i < nameMap.length; i++) {
+          if (varObj.fieldName == nameMap[i].realName) {
+            varObj.Name = nameMap[i].prettyName;
+            varObj.label = nameMap[i].label;
             break;
           }
         }
-        varObj.mandatory = variables[i].mandatory;
-        varObj.reference = variables[i].reference;
-        varObj.scope = variables[i].scope;
-        varObj.tableName = variables[i].tableName;
-        varObj.type = variables[i].type;
+        varObj.mandatory = variablesArray[i].mandatory;
+        varObj.reference = variablesArray[i].reference;
+        varObj.scope = variablesArray[i].scope;
+        varObj.tableName = variablesArray[i].tableName;
+        varObj.type = variablesArray[i].type;
         varObj.variableEditor = hasVariableEditor;
         //if this is a reference field, then we need to get the display value as well
         if (varObj.reference != "null" && hasVariableEditor)
@@ -91,34 +76,57 @@ var SNKit = (() => {
           varObj.currentValue = targetWin.g_form.getValue(varObj.fieldName);
         variableDetails.push(varObj);
       });
+      return variableDetails;
+    },
+    collectFieldMetadata: (fieldsArray, parentTable, targetWin) => {
+      var fieldDetails = [];
+      fieldsArray.forEach((field, i) => {
+        var fieldDetailObj = {};
+        fieldDetailObj.fieldName = fieldsArray[i].fieldName;
+        fieldDetailObj.label = targetWin.g_form.getLabelOf(fieldsArray[i].fieldName);
+        fieldDetailObj.isInherited = fieldsArray[i].isInherited;
+        fieldDetailObj.mandatory = fieldsArray[i].mandatory;
+        fieldDetailObj.reference = fieldsArray[i].reference;
+        fieldDetailObj.scope = fieldsArray[i].scope;
+        if (fieldsArray[i].isInherited) {
+          fieldDetailObj.tableName = parentTable;
+        } else {
+          fieldDetailObj.tableName = fieldsArray[i].tableName;
+        }
+        if (fieldDetailObj.reference != "null")
+          fieldDetailObj.displayValue = targetWin.g_form.getDisplayBox(fieldDetailObj.fieldName).value;
+        fieldDetailObj.type = fieldsArray[i].type;
+        fieldDetailObj.currentValue = targetWin.g_form.getValue(fieldDetailObj.fieldName);
+        fieldDetails.push(fieldDetailObj);
+      });
+      return fieldDetails;
+    },
+    getFormFields: (targetWin, callback) => {
+      var fieldDetails = [];
+      var variableDetails = [];
+      var fields = [];
+      var variables = [];
+      var formElements = targetWin.g_form.elements;
+      var nameMapClone = targetWin.g_form.nameMap;
+      //var hasVariableEditor = targetWin.g_form.prefixHandlers.variables ? true : false;
+      //separate the fields and variables into separate arrays for catalog items
+      formElements.forEach((elem, i) => {
+        if (elem.tableName == "variable" && !elem.fieldName.startsWith("ni.")) {
+          variables.push(elem);
+        } else if (!elem.fieldName.startsWith("ni.")) {
+          fields.push(elem);
+        }
+      });
+      //collect the variable properties
+      variableDetails = SNKit.collectVariableMetadata(variables, nameMapClone, targetWin);
       //collect the field properties
       var parentTable;
       SNKit.getParentTable().then((name) => {
         parentTable = name;
-        fields.forEach((field, i) => {
-          var fieldDetailObj = {};
-          fieldDetailObj.fieldName = fields[i].fieldName;
-          fieldDetailObj.label = targetWin.g_form.getLabelOf(fields[i].fieldName);
-          fieldDetailObj.isInherited = fields[i].isInherited;
-          fieldDetailObj.mandatory = fields[i].mandatory;
-          fieldDetailObj.reference = fields[i].reference;
-          fieldDetailObj.scope = fields[i].scope;
-          if (fields[i].isInherited) {
-            fieldDetailObj.tableName = parentTable;
-          } else {
-            fieldDetailObj.tableName = fields[i].tableName;
-          }
-          if (fieldDetailObj.reference != "null")
-            fieldDetailObj.displayValue = targetWin.g_form.getDisplayBox(fieldDetailObj.fieldName).value;
-          fieldDetailObj.type = fields[i].type;
-          fieldDetailObj.currentValue = targetWin.g_form.getValue(fieldDetailObj.fieldName);
-          fieldDetails.push(fieldDetailObj);
-        });
+        fieldDetails = SNKit.collectFieldMetadata(fields, parentTable, targetWin);
         SNKit.alphaSortDataObject("fieldName", fieldDetails)
           .then(SNKit.alphaSortDataObject("Name", variableDetails))
           .then(callback({ fieldDetails: fieldDetails, variableDetails: variableDetails }));
-        /*SNKit.alphaSortDataObject("label", fieldDetails)
-          .then(callback(fieldDetails));*/
       });
     },
     getFormProperties: (callback) => {
@@ -324,8 +332,53 @@ var snkit_api = (() => {
       if(_callback) _callback(widgetScopes);
       else return widgetScopes;
     },
+    createWidgetScopeObjects: () => {
+      var widgetScopes = snkit_api.getWidgetScopes();
+      var names = [];
+      var duplicateWidgetCounter = {};
+      widgetScopes.forEach((scope) => {
+        var scriptableName = `$${scope.widget.name.toLowerCase()}`;
+        scriptableName = scriptableName.split(" ").join("_");
+        //check for duplicates and tag them with numbers
+        if(names.indexOf(scriptableName) !== -1){
+          if(duplicateWidgetCounter.hasOwnProperty(scriptableName)){
+            duplicateWidgetCounter[scriptableName]++;
+            scriptableName = scriptableName + duplicateWidgetCounter[scriptableName];
+          } else {
+            duplicateWidgetCounter[scriptableName] = 1;
+            scriptableName = scriptableName + duplicateWidgetCounter[scriptableName];
+          }
+        }
+        snkit_api[scriptableName] = scope;
+      });
+    },
     getFormFields: (fieldName) => {
-      console.log("api functions coming soon!");
+      var targetWin = SNKit.getTargetWindow();
+      var fieldDetails = [];
+      var variableDetails = [];
+      var fields = [];
+      var variables = [];
+      var formElements = targetWin.g_form.elements;
+      var nameMapClone = targetWin.g_form.nameMap;
+      //var hasVariableEditor = targetWin.g_form.prefixHandlers.variables ? true : false;
+      //separate the fields and variables into separate arrays for catalog items
+      formElements.forEach((elem, i) => {
+        if (elem.tableName == "variable" && !elem.fieldName.startsWith("ni.")) {
+          variables.push(elem);
+        } else if (!elem.fieldName.startsWith("ni.")) {
+          fields.push(elem);
+        }
+      });
+      //collect the field properties
+      var parentTable;
+      SNKit.getParentTable().then((name) => {
+        parentTable = name;
+        fieldDetails = SNKit.collectFieldMetadata(fields, parentTable, targetWin);
+      });
+      //collect the variable properties
+      variableDetails = SNKit.collectVariableMetadata(variables, nameMapClone, targetWin);
+      var results = [fieldDetails, variableDetails];
+      return results;
     },
     monitorField: (fieldName) => {
       console.log("api functions coming soon!");
@@ -336,6 +389,14 @@ var snkit_api = (() => {
   }
 })();
 
+//if this is a Service Portal page, add the widget scope objects to the snkit_api object
+setTimeout(() => {
+  if (window.NOW.hasOwnProperty("sp")) {
+    console.log("service portal page");
+    snkit_api.createWidgetScopeObjects();
+  }
+}, 2000)
+  
 window.addEventListener("snkitRequest", function(event) {
   var cmd = event.detail.cmd;
   var cmdData = event.detail.cmdData;
