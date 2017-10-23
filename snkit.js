@@ -132,7 +132,7 @@ var SNKit = (() => {
     getFormProperties: (callback) => {
       var fieldDetails = [];
       var targetWin = SNKit.getTargetWindow();
-      if (targetWin) {
+      if (targetWin.hasOwnProperty("g_form")) {
         SNKit.getFormFields(targetWin, (data) => {
           fieldDetails = data;
           callback(fieldDetails);
@@ -352,10 +352,8 @@ var snkit_api = (() => {
         snkit_api[scriptableName] = scope;
       });
     },
-    getFormFields: (fieldName) => {
+    createFormFieldsObjects: (fieldName) => {
       var targetWin = SNKit.getTargetWindow();
-      var fieldDetails = [];
-      var variableDetails = [];
       var fields = [];
       var variables = [];
       var formElements = targetWin.g_form.elements;
@@ -373,12 +371,10 @@ var snkit_api = (() => {
       var parentTable;
       SNKit.getParentTable().then((name) => {
         parentTable = name;
-        fieldDetails = SNKit.collectFieldMetadata(fields, parentTable, targetWin);
+        snkit_api.$fields = SNKit.collectFieldMetadata(fields, parentTable, targetWin);
       });
       //collect the variable properties
-      variableDetails = SNKit.collectVariableMetadata(variables, nameMapClone, targetWin);
-      var results = [fieldDetails, variableDetails];
-      return results;
+      snkit_api.$variables = SNKit.collectVariableMetadata(variables, nameMapClone, targetWin);
     },
     monitorField: (fieldName) => {
       console.log("api functions coming soon!");
@@ -392,8 +388,9 @@ var snkit_api = (() => {
 //if this is a Service Portal page, add the widget scope objects to the snkit_api object
 setTimeout(() => {
   if (window.NOW.hasOwnProperty("sp")) {
-    console.log("service portal page");
     snkit_api.createWidgetScopeObjects();
+  } else if (SNKit.getTargetWindow().hasOwnProperty("g_form")) {
+    snkit_api.createFormFieldsObjects();
   }
 }, 2000)
   
