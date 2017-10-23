@@ -275,7 +275,56 @@ var SNKit = (() => {
 
 var snkit_api = (() => {
   return {
-    getWidgetScope: (widgetName) => {
+    getWidgetScopes: (p1, p2) => {
+      var _widgetName;
+      var _callback;
+      /**
+       * Allow the user to either enter a string name of the widget, a string name of
+       * the widget with a callback, or just a callback.
+       */
+      if(p1) {
+        if(typeof(p1) === "string") {
+          _widgetName = p1;
+        } else if(typeof(p1) === "function") {
+          _callback = p1;
+        }
+      }
+      if(p2) {
+        if(typeof(p2) === "function")
+          _callback = p2;
+      }
+
+      var widgetScopes = [];
+      var spWidgets = document.querySelectorAll("[widget='widget']");
+
+      spWidgets.forEach((widget, i) => {
+        var thisScope = angular.element(spWidgets[i]).scope();
+        var scopeCopy = {};
+        for(var property in thisScope) {
+          if(property.charAt(0) !== "$" || property === "$root") {
+              scopeCopy[property] = thisScope[property];
+          }
+        }
+        widgetScopes.push(scopeCopy);
+      });
+
+      if(_widgetName) {
+        if (_callback) {
+          var results = widgetScopes.filter((scope) => {
+            return scope.widget.name.toUpperCase() == _widgetName.toUpperCase()
+          });
+          _callback(results);
+          return;
+        } else {
+          return widgetScopes.filter((scope) => {
+            return scope.widget.name.toUpperCase() == _widgetName.toUpperCase()
+          });
+        }
+      }
+      if(_callback) _callback(widgetScopes);
+      else return widgetScopes;
+    },
+    getFormFields: (fieldName) => {
       console.log("api functions coming soon!");
     },
     monitorField: (fieldName) => {
