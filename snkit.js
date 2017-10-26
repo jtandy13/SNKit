@@ -199,13 +199,8 @@ var SNKit = (() => {
         var thisScope = angular.element(spWidgets[i]).scope();
         detailObj.name = thisScope.widget.name;
         detailObj.technicalName = thisScope.widget.id;
-        if (spWidgets[i].id) {
-          detailObj.id = spWidgets[i].id;
-          detailObj.identifier = "id"
-        } else {
-          detailObj.className = spWidgets[i].classList.item(0);
-          detailObj.identifier = "class"
-        }
+        detailObj.className = spWidgets[i].classList.item(0);
+        detailObj.identifier = "class"
         details.push(detailObj);
       })
       callback(details);
@@ -215,6 +210,9 @@ var SNKit = (() => {
     },
     isFormPage: (callback) => {
       callback(SNKit.getTargetWindow().hasOwnProperty("g_form"));
+    },
+    isNotReadOnlyMode: (callback) => {
+      callback(window.NOW.user_display_name.search("snc_read_only") === -1);
     },
     showUiPolicies: (fieldName, callback) => {
       var targetWindow = SNKit.getTargetWindow()
@@ -382,13 +380,20 @@ var snkit_api = (() => {
   }
 })();
 
-//if this is a Service Portal page, add the widget scope objects to the snkit_api object
+/**
+ * if this is a Service Portal page, add the widget scope objects to the snkit_api object.
+ * if this is a form, add the form fields and variables to the snkit_api object
+ */
 setTimeout(() => {
-  if (window.NOW.hasOwnProperty("sp")) {
-    snkit_api.createWidgetScopeObjects();
-  } else if (SNKit.getTargetWindow().hasOwnProperty("g_form")) {
-    snkit_api.createFormFieldsObjects();
-  }
+  SNKit.isNotReadOnlyMode((result) => {
+    if (result) {
+      if (window.NOW.hasOwnProperty("sp")) {
+        snkit_api.createWidgetScopeObjects();
+      } else if (SNKit.getTargetWindow().hasOwnProperty("g_form")) {
+        snkit_api.createFormFieldsObjects();
+      }
+    }
+  });
 }, 2000)
   
 window.addEventListener("snkitRequest", function(event) {
@@ -436,6 +441,11 @@ window.addEventListener("snkitRequest", function(event) {
     });
   } else if (cmd === "isFormPage"){
     SNKit.isFormPage((data) => {
+      // send the data back to the content script
+      window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
+    });
+  } else if (cmd === "isNotReadOnlyMode"){
+    SNKit.isNotReadOnlyMode((data) => {
       // send the data back to the content script
       window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
     });
