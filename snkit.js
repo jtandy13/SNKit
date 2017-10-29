@@ -212,8 +212,15 @@ var SNKit = (() => {
       callback(SNKit.getTargetWindow().hasOwnProperty("g_form"));
     },
     isNotReadOnlyMode: (callback) => {
-      if(window.NOW.user.hasOwnProperty("roles")){
-        callback(window.NOW.user.roles.search("snc_read_only") === -1);
+      //This will apply to the standard interface
+      if (window.NOW.hasOwnProperty("user")) {
+        if (window.NOW.user.hasOwnProperty("roles")) {
+          callback(window.NOW.user.roles.search("snc_read_only") === -1);
+        } else {
+          callback(false);
+        }
+      } else if (window.NOW.hasOwnProperty("user_display_name")) {
+        callback(window.NOW.user_display_name.search("snc_read_only") === -1);
       } else {
         callback(false);
       }
