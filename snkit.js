@@ -212,7 +212,11 @@ var SNKit = (() => {
       callback(SNKit.getTargetWindow().hasOwnProperty("g_form"));
     },
     isNotReadOnlyMode: (callback) => {
-      callback(window.NOW.user_display_name.search("snc_read_only") === -1);
+      if(window.NOW.user.hasOwnProperty("roles")){
+        callback(window.NOW.user.roles.search("snc_read_only") === -1);
+      } else {
+        callback(false);
+      }
     },
     showUiPolicies: (fieldName, callback) => {
       var targetWindow = SNKit.getTargetWindow()
