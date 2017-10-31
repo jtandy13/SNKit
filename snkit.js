@@ -51,10 +51,12 @@ var SNKit = (() => {
         for (let i = 0; i < nameMap.length; i++) {
           if (varObj.fieldName == nameMap[i].realName) {
             varObj.Name = nameMap[i].prettyName;
-            varObj.label = nameMap[i].label;
+            //varObj.label = nameMap[i].label;
             break;
           }
         }
+        if(varObj.Name != "IO:null")
+          varObj.label = targetWin.g_form.getLabelOf(varObj.Name);
         varObj.mandatory = variablesArray[i].mandatory;
         varObj.reference = variablesArray[i].reference;
         varObj.scope = variablesArray[i].scope;
