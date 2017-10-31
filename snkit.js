@@ -234,7 +234,7 @@ var SNKit = (() => {
           if (action.name == fieldName) {
             var policyDetailObj = {};
             policyDetailObj.name = policy.short_description;
-            policyDetailObj.url = `https://${targetWindow.location.hostname}/${policy.table}.do?sys_id=${policy.sys_id}`;
+            policyDetailObj.url = `https://${targetWindow.location.hostname}/sys_ui_policy.do?sys_id=${policy.sys_id}`;
             targetPolicies.push(policyDetailObj);
           }
         })
