@@ -355,6 +355,8 @@ var snkit_api = (() => {
             duplicateWidgetCounter[scriptableName] = 1;
             scriptableName = scriptableName + duplicateWidgetCounter[scriptableName];
           }
+        } else {
+          names.push(scriptableName);
         }
         snkit_api[scriptableName] = scope;
       });
