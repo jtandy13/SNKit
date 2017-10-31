@@ -45,5 +45,8 @@ The Service Portal tab points the user to the AngularJS scope data for each widg
 
 ![widget_controllers](https://user-images.githubusercontent.com/22809154/31272812-fac4f912-aad7-11e7-9663-7d4c80409b72.jpg)
 
+### Adding SNKit to Chrome
+Instructions can be found [here](https://github.com/jtandy13/SNKit/wiki/Adding-SNKit-to-Chrome).
+
 ### Help
 The Help tab allows the user to log any observed bugs or issues with SNKit to the dedicated GitHub page for the project.
