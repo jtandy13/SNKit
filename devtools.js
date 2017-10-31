@@ -419,7 +419,7 @@ snkitUtil.isNotReadOnlyMode().then((answer) => {
                 if (obj.variableEditor)
                   variableHTML += `<div class='panel panel-default fields' id=${obj.Name}`
                 else
-                  variableHTML += `<div class='panel panel-default fields' id=${obj.fieldName}`
+                  variableHTML += `<div class='panel panel-default fields' id=${obj.Name}`
                 variableHTML += ` data-name='${obj.Name}' data-fieldname='${obj.fieldName}' data-label='${obj.label}'
               data-currentvalue='${obj.currentValue}' data-displayvalue='${obj.displayValue ? obj.displayValue : ""}'
               data-type='${obj.type}' data-reference='${obj.reference}' data-mandatory='${obj.mandatory}' data-tablename='${obj.tableName}'>

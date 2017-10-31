@@ -61,6 +61,7 @@ var SNKit = (() => {
         varObj.tableName = variablesArray[i].tableName;
         varObj.type = variablesArray[i].type;
         varObj.variableEditor = hasVariableEditor;
+        
         //if this is a reference field, then we need to get the display value as well
         if (varObj.reference != "null" && hasVariableEditor)
           varObj.displayValue = targetWin.g_form.getDisplayBox("ni.VE" + varObj.fieldName).value;
