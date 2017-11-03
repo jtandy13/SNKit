@@ -363,9 +363,9 @@ var snkitUtil = (() => {
 /**
  * SNKit will only operate if the user does not have the snc_read_only role
  */
-snkitUtil.isNotReadOnlyMode().then((answer) => {
-  if (answer) {
-    snkitUtil.createSidebarPanels();
+snkitUtil.isNotReadOnlyMode().then((result) => {
+  if (result) {
+    //snkitUtil.createSidebarPanels();
 
     chrome.devtools.panels.create("SNKit", "", "snkit.html",
       (spPanel) => {
@@ -705,7 +705,7 @@ snkitUtil.isNotReadOnlyMode().then((answer) => {
            * Since the tabs are rendered when they are shown, we need to set the active tab
            * based on the page context. For now we can use the isServicePortalPage function.
            */
-          snkitUtil.isServicePortalPage().then((answer) => {
+          /*snkitUtil.isServicePortalPage().then((answer) => {
             if (answer) {
               var spTabTargetNodes = _spPanelWindow.document.querySelectorAll("#servicePortalTab, #spTabListItem");
               spTabTargetNodes.forEach((node) => {
@@ -717,7 +717,23 @@ snkitUtil.isNotReadOnlyMode().then((answer) => {
                 node.classList.add("active")
               });
             }
-          });
+          });servicePortalMode formsMode*/
+
+          // add event listeners to the formsMode checkbox
+          var formsModeCheckbox = _spPanelWindow.document.getElementById("formsMode");
+          formsModeCheckbox.addEventListener("change", () => {
+            sidebarUtil.renderFormSidebarPanel();
+            var ffTabTargetNodes = _spPanelWindow.document.querySelector("#ffTabListItem");
+            ffTabTargetNodes.style.display = "block";
+          }, false);
+
+          // add event listeners to the servicePortal checkbox
+          var servicePortalModeCheckbox = _spPanelWindow.document.getElementById("servicePortalMode");
+          servicePortalModeCheckbox.addEventListener("change", () => {
+            sidebarUtil.renderWidgetSidebarPanel();
+            var spTabTargetNodes = _spPanelWindow.document.querySelector("#spTabListItem");
+            spTabTargetNodes.style.display = "block";
+          }, false);
 
           // add event listeners to the clearValue button
           var clearValueBtn = _spPanelWindow.document.getElementById("clearValueBtn");

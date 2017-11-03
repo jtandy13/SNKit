@@ -81,11 +81,12 @@
     <div class="row">
       <div class="gridDebug col-md-12">
         <ul class="nav nav-tabs">
-          <li id="ffTabListItem"><a data-toggle="tab" href="#formFieldsTab">Form Fields</a></li>
+          <li id="ffTabListItem" style="display: none"><a data-toggle="tab" href="#formFieldsTab">Form Fields</a></li>
           <li class="scriptSearchTab" style="display: none" id="uiPoliciesSelector"><a data-toggle="tab" href="#uiPoliciesTab">UI Policies</a></li>
           <li class="scriptSearchTab" style="display: none" id="clientScriptsSelector"><a data-toggle="tab" href="#clientScriptsTab">Client Scripts</a></li>
           <li class="scriptSearchTab" style="display: none" id="businessRulesSelector"><a data-toggle="tab" href="#businessRulesTab">Business Rules</a></li>
-          <li id="spTabListItem"><a data-toggle="tab" href="#servicePortalTab">Service Portal</a></li>
+          <li id="spTabListItem" style="display: none"><a data-toggle="tab" href="#servicePortalTab">Service Portal</a></li>
+          <li class="active"><a data-toggle="tab" href="#controls">Controls</a></li>
           <li><a data-toggle="tab" href="#help">Help</a></li>
         </ul>
       </div>
@@ -252,6 +253,32 @@
         </div>
       </div>
     </div>
+    <!-- End Service Portal -->
+    <!-- Begin Controls -->
+    <div class="tab-pane active" id="controls" role="tabpanel">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6">
+            <label class="form-check-label">
+              <input type="checkbox" class="form-check-input" id="formsMode">
+              Enable forms mode
+            </label>
+          </div>
+          <div class="col-md-6"></div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <label class="form-check-label">
+              <input type="checkbox" class="form-check-input" id="servicePortalMode">
+              Enable Service Portal mode
+            </label>
+          </div>
+          <div class="col-md-6"></div>
+        </div>
+      </div>
+    </div>
+    <!-- End Controls -->
+    <!-- Begin Help -->
     <div class="tab-pane" id="help" role="tabpanel">
       <div class="container-fluid">
         <div class="row">
@@ -280,6 +307,7 @@
         </div>
       </div>
     </div>
+    <!-- End Help -->
   </div>
   
   <script src="./resources/jquery-3.2.1.min.js"></script>
