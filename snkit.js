@@ -64,11 +64,7 @@ var SNKit = (() => {
         varObj.type = variablesArray[i].type;
         varObj.variableEditor = hasVariableEditor;
         
-        //if this is a reference field, then we need to get the display value as well
-        if (varObj.reference != "null" && hasVariableEditor)
-          varObj.displayValue = targetWin.g_form.getDisplayBox("ni.VE" + varObj.fieldName).value;
-        else if (varObj.reference != "null")
-          varObj.displayValue = targetWin.g_form.getDisplayBox(varObj.fieldName).value;
+       
         /**
          * Check if the variable is part of a variable editor.
          * If not, the value can be obtained using the fieldName
@@ -77,6 +73,14 @@ var SNKit = (() => {
           varObj.currentValue = targetWin.g_form.getValue("ni.VE" + varObj.fieldName);
         else
           varObj.currentValue = targetWin.g_form.getValue(varObj.fieldName);
+
+         //if this is a reference field, then we need to get the display value as well
+        if (varObj.reference != "null" && hasVariableEditor && varObj.currentValue){
+          varObj.displayValue = targetWin.g_form.getDisplayBox("ni.VE" + varObj.fieldName).value;
+        }
+        else if (varObj.reference != "null" && varObj.currentValue){
+          varObj.displayValue = targetWin.g_form.getDisplayBox(varObj.fieldName).value;
+        }
         variableDetails.push(varObj);
       });
       return variableDetails;
