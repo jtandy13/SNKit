@@ -240,6 +240,7 @@ var formUtil = (() => {
 var sidebarUtil = (() => {
   var _widgetSidebar;
   var _formSidebar;
+  var _variableSidebar;
   return {
     /**
      * The widget scopes cannot be sourced from querying the page becuase
@@ -256,6 +257,8 @@ var sidebarUtil = (() => {
             chrome.devtools.panels.elements.createSidebarPane(
               "Service Portal Widget Scopes",
               (sidebar) => {
+                //create a reference to the new sidebar to be used later
+                _widgetSidebar = sidebar;
                 sidebar.setExpression("(" + widgetUtil.getWidgetProperties.toString() + ")()", "Service Portal Widgets");
                 sidebar.onShown.addListener(() => {
                   sidebar.setExpression("(" + widgetUtil.getWidgetProperties.toString() + ")()", "Service Portal Widgets");
@@ -272,6 +275,8 @@ var sidebarUtil = (() => {
           chrome.devtools.panels.elements.createSidebarPane(
             "ServiceNow Form Fields",
             (sidebar) => {
+              //create a reference to the new sidebar to be used later
+              _formSidebar = sidebar;
               sidebar.setObject(data.fieldDetails, "ServiceNow Form Fields");
               sidebar.onShown.addListener(() => {
                 formUtil.getFieldProperties().then((data) => {
@@ -284,6 +289,8 @@ var sidebarUtil = (() => {
           chrome.devtools.panels.elements.createSidebarPane(
             "ServiceNow Form Variables",
             (sidebar) => {
+              //create a reference to the new sidebar to be used later
+              _variableSidebar = sidebar;
               sidebar.setObject(data.variableDetails, "ServiceNow Form Variables");
               sidebar.onShown.addListener(() => {
                 formUtil.getFieldProperties().then((data) => {
@@ -293,6 +300,24 @@ var sidebarUtil = (() => {
             });
         }
       })
+    },
+    emptyFormSidebarPanel: () => {
+      // If there's no current handle, then there's no sidebar to begin with
+      if(_formSidebar){
+        _formSidebar.setObject({}, "ServiceNow Form Fields");
+      } 
+    },
+    emptyVariableSidebarPanel: () => {
+      // If there's no current handle, then there's no sidebar to begin with
+      if(_variableSidebar){
+        _variableSidebar.setObject({}, "ServiceNow Form Variables");
+      } 
+    },
+    emptyWidgetSidebarPanel: () => {
+      // If there's no current handle, then there's no sidebar to begin with
+      if(_widgetSidebar){
+        _widgetSidebar.setObject({}, "Service Portal Widgets");
+      } 
     }
   }
 })();
@@ -701,39 +726,51 @@ snkitUtil.isNotReadOnlyMode().then((result) => {
           var ffTabTargetNode = _spPanelWindow.document.getElementById("formFieldsTab");
           ffTabObserver.observe(ffTabTargetNode, observerConfig);
 
-          /**
-           * Since the tabs are rendered when they are shown, we need to set the active tab
-           * based on the page context. For now we can use the isServicePortalPage function.
-           */
-          /*snkitUtil.isServicePortalPage().then((answer) => {
-            if (answer) {
-              var spTabTargetNodes = _spPanelWindow.document.querySelectorAll("#servicePortalTab, #spTabListItem");
-              spTabTargetNodes.forEach((node) => {
-                node.classList.add("active")
-              });
-            } else {
-              var ffTabTargetNodes = _spPanelWindow.document.querySelectorAll("#formFieldsTab, #ffTabListItem");
-              ffTabTargetNodes.forEach((node) => {
-                node.classList.add("active")
-              });
-            }
-          });servicePortalMode formsMode*/
-
           // add event listeners to the formsMode checkbox
           var formsModeCheckbox = _spPanelWindow.document.getElementById("formsMode");
-          formsModeCheckbox.addEventListener("change", () => {
-            sidebarUtil.renderFormSidebarPanel();
-            var ffTabTargetNodes = _spPanelWindow.document.querySelector("#ffTabListItem");
-            ffTabTargetNodes.style.display = "block";
+          formsModeCheckbox.addEventListener("change", (e) => {
+            if (e.target.checked) {
+              // The first thing we need to do is clear out any service portal data that may be showing
+              var spTabTargetNode = _spPanelWindow.document.querySelector("#spTabListItem");
+              spTabTargetNode.style.display = "none";
+              var servicePortalModeCheckbox = _spPanelWindow.document.getElementById("servicePortalMode");
+              servicePortalModeCheckbox.checked = false;
+              // Unfortunately we cannot hide the sidebar panels after creating so the only option is to empty them
+              sidebarUtil.emptyWidgetSidebarPanel();
+              
+              // Create the new forms mode data
+              sidebarUtil.renderFormSidebarPanel();
+              var ffTabTargetNodes = _spPanelWindow.document.querySelector("#ffTabListItem");
+              ffTabTargetNodes.style.display = "block";
+              var refreshBtn = _spPanelWindow.document.querySelector("#refreshSNKitBtn");
+              refreshBtn.classList.remove("disabled");
+            }
           }, false);
 
-          // add event listeners to the servicePortal checkbox
+          // add event listeners to the service portal checkbox
           var servicePortalModeCheckbox = _spPanelWindow.document.getElementById("servicePortalMode");
-          servicePortalModeCheckbox.addEventListener("change", () => {
-            sidebarUtil.renderWidgetSidebarPanel();
-            var spTabTargetNodes = _spPanelWindow.document.querySelector("#spTabListItem");
-            spTabTargetNodes.style.display = "block";
+          servicePortalModeCheckbox.addEventListener("change", (e) => {
+            if (e.target.checked) {
+              // The first thing we need to do is clear out any forms data that may be showing
+              var ffTabTargetNodes = _spPanelWindow.document.querySelectorAll("#ffTabListItem, .scriptSearchTab");
+              ffTabTargetNodes.forEach((node) => {
+                node.style.display = "none";
+              });
+              var formsModeCheckbox = _spPanelWindow.document.getElementById("formsMode");
+              formsModeCheckbox.checked = false;
+              // Unfortunately we cannot hide the sidebar panels after creating so the only option is to empty them
+              sidebarUtil.emptyFormSidebarPanel();
+              sidebarUtil.emptyVariableSidebarPanel();
+              
+               // Create the new data for Service Portal mode
+              sidebarUtil.renderWidgetSidebarPanel();
+              var spTabTargetNodes = _spPanelWindow.document.querySelector("#spTabListItem");
+              spTabTargetNodes.style.display = "block";
+              var refreshBtn = _spPanelWindow.document.querySelector("#refreshSNKitBtn");
+              refreshBtn.classList.remove("disabled");
+            }
           }, false);
+
 
           // add event listeners to the clearValue button
           var clearValueBtn = _spPanelWindow.document.getElementById("clearValueBtn");

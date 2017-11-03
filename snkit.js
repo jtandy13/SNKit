@@ -399,22 +399,6 @@ var snkit_api = (() => {
     },
   }
 })();
-
-/**
- * if this is a Service Portal page, add the widget scope objects to the snkit_api object.
- * if this is a form, add the form fields and variables to the snkit_api object
- */
-setTimeout(() => {
-  SNKit.isNotReadOnlyMode((result) => {
-    if (result) {
-      if (window.NOW.hasOwnProperty("sp")) {
-        snkit_api.createWidgetScopeObjects();
-      } else if (SNKit.getTargetWindow().hasOwnProperty("g_form")) {
-        snkit_api.createFormFieldsObjects();
-      }
-    }
-  });
-}, 2000)
   
 window.addEventListener("snkitRequest", function(event) {
   var cmd = event.detail.cmd;
