@@ -42,44 +42,42 @@ var SNKit = (() => {
         });
       });
     },
+    filterVariablesArray: (variablesArray) => {
+      //In Kingston variables in a variable editor only appear once in the g_form.elements array.
+      //In earlier releases the variables appear twice; once with a ni.VE prefix and once without.
+      //To cater for this difference, we need to check which scenario we are dealing with and filter the
+      //variables array accordingly.
+      var catItemVars = variablesArray.filter(v => v.fieldName.startsWith("IO") && !v.fieldName.startsWith("IO:null"));
+      //if catItemVars contains any elements, we can immediately return
+      if (catItemVars.length > 0) return catItemVars;
+      //Check for non-prefixed variable editor fields, these will appear in releases earlier than Kingston
+      var nonPrefixedVars = variablesArray.filter(v => !v.fieldName.startsWith("ni.VE") && !v.fieldName.startsWith("IO:null"));
+      //if nonPrefixedVars contains any elements, we can immediately return
+      if (nonPrefixedVars.length > 0) return nonPrefixedVars;
+      //if we haven't returned yet, we must be dealing with Kingston. Filter out "IO:null" and return
+      return variablesArray.filter(v => !v.fieldName.startsWith("IO:null"));
+    },
     collectVariableMetadata: (variablesArray, nameMap, targetWin) => {
       var variableDetails = [];
-      var hasVariableEditor = targetWin.g_form.prefixHandlers.variables ? true : false;
+      variablesArray = SNKit.filterVariablesArray(variablesArray);
       variablesArray.forEach((variable, i) => {
         var varObj = {};
         varObj.fieldName = variablesArray[i].fieldName;
         for (let i = 0; i < nameMap.length; i++) {
           if (varObj.fieldName == nameMap[i].realName) {
             varObj.Name = nameMap[i].prettyName;
-            //varObj.label = nameMap[i].label;
             break;
           }
         }
-        if(varObj.Name != "IO:null")
-          varObj.label = targetWin.g_form.getLabelOf(varObj.Name);
+        varObj.label = targetWin.g_form.getLabelOf(varObj.Name);
         varObj.mandatory = variablesArray[i].mandatory;
         varObj.reference = variablesArray[i].reference;
         varObj.scope = variablesArray[i].scope;
         varObj.tableName = variablesArray[i].tableName;
         varObj.type = variablesArray[i].type;
-        varObj.variableEditor = hasVariableEditor;
-        
-       
-        /**
-         * Check if the variable is part of a variable editor.
-         * If not, the value can be obtained using the fieldName
-         */
-        if (hasVariableEditor)
-          varObj.currentValue = targetWin.g_form.getValue("ni.VE" + varObj.fieldName);
-        else
-          varObj.currentValue = targetWin.g_form.getValue(varObj.fieldName);
-
-         //if this is a reference field, then we need to get the display value as well
-        if (varObj.reference != "null" && hasVariableEditor && varObj.currentValue){
-          varObj.displayValue = targetWin.g_form.getDisplayBox("ni.VE" + varObj.fieldName).value;
-        }
-        else if (varObj.reference != "null" && varObj.currentValue){
-          varObj.displayValue = targetWin.g_form.getDisplayBox(varObj.fieldName).value;
+        varObj.currentValue = targetWin.g_form.getValue(varObj.Name);
+        if (varObj.reference != "null" && varObj.currentValue){
+          varObj.displayValue = targetWin.g_form.getDisplayBox(varObj.Name).value;
         }
         variableDetails.push(varObj);
       });
@@ -115,12 +113,11 @@ var SNKit = (() => {
       var variables = [];
       var formElements = targetWin.g_form.elements;
       var nameMapClone = targetWin.g_form.nameMap;
-      //var hasVariableEditor = targetWin.g_form.prefixHandlers.variables ? true : false;
       //separate the fields and variables into separate arrays for catalog items
       formElements.forEach((elem, i) => {
-        if (elem.tableName == "variable" && !elem.fieldName.startsWith("ni.")) {
+        if (elem.tableName == "variable") {
           variables.push(elem);
-        } else if (!elem.fieldName.startsWith("ni.")) {
+        } else {
           fields.push(elem);
         }
       });
@@ -373,12 +370,11 @@ var snkit_api = (() => {
       var variables = [];
       var formElements = targetWin.g_form.elements;
       var nameMapClone = targetWin.g_form.nameMap;
-      //var hasVariableEditor = targetWin.g_form.prefixHandlers.variables ? true : false;
       //separate the fields and variables into separate arrays for catalog items
       formElements.forEach((elem, i) => {
-        if (elem.tableName == "variable" && !elem.fieldName.startsWith("ni.")) {
+        if (elem.tableName == "variable") {
           variables.push(elem);
-        } else if (!elem.fieldName.startsWith("ni.")) {
+        } else {
           fields.push(elem);
         }
       });
