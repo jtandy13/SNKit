@@ -1,211 +1,82 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="./resources/bootstrap.min.css">
-    <style>
-      .customNav{
-        padding-top: 15px;
-        padding-bottom: 15px;
-      }
-      /*.gridDebug{
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="./resources/bootstrap.min.css">
+  <style>
+    .customNav {
+      padding-top: 15px;
+      padding-bottom: 15px;
+    }
+    /*.gridDebug{
         border: solid red 1px;
       }*/
-      .selectedField{
-        background: #e6e6e6 !important;
-        border-color: #881391 !important;
-        box-shadow: 0px 0px 4px #881391;
-      }
-      .fields:hover{
-        cursor: pointer;
-        background-color: #e6e6e6;
-        border-color: #881391;
-      }
-      .propertyKey{
-        color: #881391;
-      }
-      .widgetList{
-        color: #881391;
-        padding-left: 15px;
-      }
-      .widgetBox{
-        border-radius: 10px;
-        padding: 5px;
-      }
-      .widgetBox:hover{
-        cursor: pointer;
-        background-color: #f3f3f3;
-        box-shadow: 0px 0px 4px #881391;
-      }
-      .widgetListItem:hover{
-        cursor: pointer;
-        border: #881391;
-      }
-      .propertyValue{
-        color: #c41a16;
-      }
-      .instructionImage{
-        box-shadow: 0px 0px 20px #888;
-        margin-bottom: 40px;
-      }
-      .issueLink:hover{
-        cursor: pointer;
-      }
-      .uiPolicyBox:hover{
-        cursor: pointer;
-      }
-      .clientScriptBox:hover{
-        cursor: pointer;
-      }
-      .businessRuleBox:hover{
-        cursor: pointer;
-      }
-      .panel {
-        background-color: #fafafa;
-        border-color: #337ab7
-      }
-      body {
-        background-color: #eef1f2;
-      }
-      .btn-default {
-        background-color: #fafafa;
-      }
-      .nav-tabs>li.active>a {
-        background-color: #fafafa;
-      }
-    </style>
-  </head>
+
+    .widgetList {
+      color: #881391;
+      padding-left: 15px;
+    }
+
+    .widgetBox {
+      border-radius: 10px;
+      padding: 5px;
+    }
+
+    .widgetBox:hover {
+      cursor: pointer;
+      background-color: #f3f3f3;
+      box-shadow: 0px 0px 4px #881391;
+    }
+
+    .widgetListItem:hover {
+      cursor: pointer;
+      border: #881391;
+    }
+
+    .instructionImage {
+      box-shadow: 0px 0px 20px #888;
+      margin-bottom: 40px;
+    }
+
+    .issueLink:hover {
+      cursor: pointer;
+    }
+
+    .panel {
+      background-color: #fafafa;
+      border-color: #337ab7
+    }
+
+    body {
+      background-color: #eef1f2;
+    }
+
+    .btn-default {
+      background-color: #fafafa;
+    }
+
+    .nav-tabs>li.active>a {
+      background-color: #fafafa;
+    }
+  </style>
+</head>
+
 <body>
   <!-- Begin nav tabs -->
-  <div class="container-fluid customNav">
-    <div class="row">
-      <div class="gridDebug col-md-12">
-        <ul class="nav nav-tabs">
-          <li id="ffTabListItem" style="display: none"><a data-toggle="tab" href="#formFieldsTab">Form Fields</a></li>
-          <li class="scriptSearchTab" style="display: none" id="uiPoliciesSelector"><a data-toggle="tab" href="#uiPoliciesTab">UI Policies</a></li>
-          <li class="scriptSearchTab" style="display: none" id="clientScriptsSelector"><a data-toggle="tab" href="#clientScriptsTab">Client Scripts</a></li>
-          <li class="scriptSearchTab" style="display: none" id="businessRulesSelector"><a data-toggle="tab" href="#businessRulesTab">Business Rules</a></li>
-          <li id="spTabListItem" style="display: none"><a data-toggle="tab" href="#servicePortalTab">Service Portal</a></li>
-          <li class="active"><a data-toggle="tab" href="#controls">Controls</a></li>
-          <li><a data-toggle="tab" href="#help">Help</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <!-- End nav tabs -->
-  <!-- Begin Form Analyzer -->
   <div class="tab-content">
-    <div class="tab-pane" id="formFieldsTab" role="tabpanel">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="gridDebug col-md-2">
-            <div class="btn-group-vertical" role="group" aria-label="..." id="formFunctionsBtnGroup" style="display: none">
-              <button id="clearValueBtn" class="btn btn-default">Clear Value</button>
-              <div class="btn-group">
-                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Disable/Enable Field <span class="caret"></span></button>
-                <ul class="dropdown-menu">
-                  <li><a href="#" id="disableFieldBtn">Disable field</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="#" id="enableFieldBtn">Enable field</a></li>
-                </ul>
-              </div>
-              <div class="btn-group">
-                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Set/Remove Mandatory <span class="caret"></span></button>
-                <ul class="dropdown-menu">
-                  <li><a href="#" id="setMandatoryBtn">Set mandatory</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="#" id="removeMandatoryBtn">Remove mandatory</a></li>
-                </ul>
-              </div>
-              <div class="btn-group">
-                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Show/Hide Field(s) <span class="caret"></span></button>
-                <ul class="dropdown-menu">
-                  <li><a href="#" id="showFieldBtn">Show field</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="#" id="hideFieldBtn">Hide field</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="#" id="showAllHiddenFieldsBtn">Show all hidden fields</a></li>
-                </ul>
-              </div>
-              <button id="showClientScriptsBtn" class="btn btn-default">Search Client Scripts</button>
-              <button id="showUiPoliciesBtn" class="btn btn-default">Search UI Policies</button>
-              <button id="showBusinessRulesBtn" class="btn btn-default">Search Business Rules</button>
-              <button id="showReferenceBtn" class="btn btn-default">Evaluate reference in console</button>
-            </div>
-          </div>
-          <div class="gridDebug col-md-10">
-            <div class="row">
-              <div class="col-md-7"></div>
-              <div class="col-md-5">
-                <div class="form-inline" id="searchForm" style="display: none">
-                  <label for="searchCategory">Search Category:</label>
-                  <select class="form-control" id="searchCategory">
-                    <option id="label">Label</option>
-                    <option id="fieldname">Field Name</option>
-                    <option id="name">Name (variables only)</option>
-                    <option id="type">Type</option>
-                    <option id="mandatory">Mandatory</option>
-                  </select>
-                  <div class="input-group searchBar">
-                    <input type="text" class="form-control" id="searchText" placeholder="Search for...">
-                    <span class="input-group-btn">
-                      <button class="btn btn-default" type="button" id="fieldSearchBtn">Go!</button>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <h3 id="fieldsLabel" style="display: none"><strong><em>Fields</em></strong></h3>
-                <div id="fieldsList"></div>
-              </div>
-              <div class="col-md-6">
-                <h3 id="variablesLabel" style="display: none"><strong><em>Variables</em></strong></h3>
-                <div id="variablesList"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> <!-- End Form Analyzer -->
-    <!-- Begin UI Policies -->
-    <div class="tab-pane" id="uiPoliciesTab" role="tabpanel">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-6">
-            <div id="policiesList"></div>
-          </div>
-          <div class="col-md-6"></div>
+    <div class="container-fluid customNav">
+      <div class="row">
+        <div class="gridDebug col-md-12">
+          <ul class="nav nav-tabs">
+            <li id="spTabListItem" style="display: none"><a data-toggle="tab" href="#servicePortalTab">Service Portal</a></li>
+            <li class="active"><a data-toggle="tab" href="#controls">Controls</a></li>
+            <li><a data-toggle="tab" href="#help">Help</a></li>
+          </ul>
         </div>
       </div>
     </div>
-    <!-- End UI Policies -->
-    <!-- Begin Client Scripts -->
-    <div class="tab-pane" id="clientScriptsTab" role="tabpanel">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-6">
-            <div id="clientScriptsList"></div>
-          </div>
-          <div class="col-md-6"></div>
-        </div>
-      </div>
-    </div>
-    <!-- End Client Scripts -->
-    <!-- Begin Business Rules -->
-    <div class="tab-pane" id="businessRulesTab" role="tabpanel">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-6">
-            <div id="businessRulesList"></div>
-          </div>
-          <div class="col-md-6"></div>
-        </div>
-      </div>
-    </div>
-    <!-- End Business Rules -->
+    <!-- End nav tabs -->
     <!-- Begin Service Portal -->
     <div class="tab-pane" id="servicePortalTab" role="tabpanel">
       <div class="container-fluid" id="servicePortalContent" style="display: none">
@@ -216,15 +87,14 @@
                 <div class="panel panel-default" id="controllerList">
                   <div class="panel-body">
                     <h3><strong><em>Widget Scopes</em></strong></h3>
-                    <p>SNKit has logged all Service Portal widget AngularJS scope objects to the <em>Service Portal Widget Scopes</em> 
-                      sidebar of the Elements panel.</p>
+                    <p>SNKit has logged all Service Portal widget AngularJS scope objects to the <em>Service Portal Widget Scopes</em>                      sidebar of the Elements panel.</p>
                     <br>
                     <p><strong>1. Open the Elements panel at the top of the devtools window.</strong></p>
-                    <img class="instructionImage" src="./resources/images/elementsPanel.jpg"> 
+                    <img class="instructionImage" src="./resources/images/elementsPanel.jpg">
                     <p><strong>2. From the sidebar panels, locate the <em>Service Portal Widget Scopes</em> panel. You may need to show all sidebar
                       panels with the arrow button.</strong>
                     </p>
-                    <img class="instructionImage" src="./resources/images/sidebarPanel.jpg"> 
+                    <img class="instructionImage" src="./resources/images/sidebarPanel.jpg">
                     <p><strong>3. Expand each widget to view the scope data.</strong>
                     </p>
                     <img class="instructionImage" src="./resources/images/widgetList.jpg">
@@ -240,8 +110,8 @@
                   <div class="panel-body">
                     <h3><strong><em>Widget Controllers</em></strong></h3>
                     <p>Click on any Service Portal widget listed below to view and/or edit the AngularJS controller from devtools.
-                      Saved changes to the controllers for testing and/or debugging will not change or affect the widget record in the ServiceNow
-                      instance.
+                      Saved changes to the controllers for testing and/or debugging will not change or affect the widget
+                      record in the ServiceNow instance.
                     </p>
                     <p>Change to <em>Inspect mode</em> to instead be taken to the top HTML element of the widget.</p>
                     <div id="widgetsList"></div>
@@ -262,20 +132,11 @@
             <div class="row">
               <div class="col-md-12">
                 <label class="form-check-label">
-                  <input type="checkbox" class="form-check-input" id="formsMode">
-                  Enable forms mode
-                </label>
-              </div>
-              <div class="col-md-12">
-                <label class="form-check-label">
                   <input type="checkbox" class="form-check-input" id="servicePortalMode">
-                  Enable Service Portal mode
+                  Enable SNKit
                 </label>
               </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <button id="refreshSNKitBtn" class="btn btn-primary disabled">Refresh SNKit</button>
           </div>
           <div class="col-md-6"></div>
         </div>
@@ -292,8 +153,8 @@
                 <div class="row">
                   <div class="col-md-9">
                     <h3><strong><em>Got Issues?</em></strong></h3>
-                    <p>If you're having any technical difficulties with the SNKit devtools extension or you'd like to 
-                      see something changed, please log an issue through the SNKit GitHub page link below.</p>
+                    <p>If you're having any technical difficulties with the SNKit devtools extension or you'd like to see something
+                      changed, please log an issue through the SNKit GitHub page link below.</p>
                     <div class="row">
                       <div class="col-md-12">
                         <h4 class="issueLink" id="createIssue"><strong><em><a>Create New Issue</a></em></strong></h4>
@@ -313,8 +174,9 @@
     </div>
     <!-- End Help -->
   </div>
-  
+
   <script src="./resources/jquery-3.2.1.min.js"></script>
   <script src="./resources/bootstrap.min.js"></script>
 </body>
+
 </html>

@@ -26,21 +26,22 @@ function relayResponse(sendResponse) {
     }
   }, false);
 }
-
 function highlightWidget(widgetIdentityObj) {
-  if(widgetIdentityObj.identifier == "id") 
-    var target = document.getElementById(widgetIdentityObj.idNum);
+  if(widgetIdentityObj.id) 
+    var target = document.getElementById(widgetIdentityObj.id);
   else
-    var target = document.querySelector("." + widgetIdentityObj.idNum);
-  Object.assign(target.style, {animation: "pulse 500ms", boxShadow: "0px 0px 25px #881391"});
+    var target = document.querySelector("." + widgetIdentityObj.class);
+  if(target)
+    Object.assign(target.style, {animation: "pulse 500ms", boxShadow: "0px 0px 25px #881391"});
 }
 
 function removeWidgetHighlight(widgetIdentityObj) {
-  if(widgetIdentityObj.identifier == "id") 
-    var target = document.getElementById(widgetIdentityObj.idNum);
+  if(widgetIdentityObj.id) 
+    var target = document.getElementById(widgetIdentityObj.id);
   else
-    var target = document.querySelector("." + widgetIdentityObj.idNum);
-  Object.assign(target.style, {animation: "", boxShadow: "" });
+    var target = document.querySelector("." + widgetIdentityObj.class);
+  if(target)
+    Object.assign(target.style, {animation: "", boxShadow: "" });
 }
 
 // Make a decision about where the command will be executed;
