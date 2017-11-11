@@ -1,6 +1,7 @@
 var SNKit = (() => {
   return {
     version: "1.0.0",
+    nonLabeledVariables: ["container", "macro", "label", "formatter", "checkbox_container"],
     clearValue: (fieldName, callback) => {
       var targetWin = SNKit.getTargetWindow();
       targetWin.g_form.clearValue(fieldName);
@@ -47,15 +48,15 @@ var SNKit = (() => {
       //In earlier releases the variables appear twice; once with a ni.VE prefix and once without.
       //To cater for this difference, we need to check which scenario we are dealing with and filter the
       //variables array accordingly.
-      var catItemVars = variablesArray.filter(v => v.fieldName.startsWith("IO") && !v.fieldName.startsWith("IO:null"));
+      var catItemVars = variablesArray.filter(v => v.fieldName.startsWith("IO") && !v.fieldName.startsWith("IO:null") && v.type !== "container");
       //if catItemVars contains any elements, we can immediately return
       if (catItemVars.length > 0) return catItemVars;
       //Check for non-prefixed variable editor fields, these will appear in releases earlier than Kingston
-      var nonPrefixedVars = variablesArray.filter(v => !v.fieldName.startsWith("ni.VE") && !v.fieldName.startsWith("IO:null"));
+      var nonPrefixedVars = variablesArray.filter(v => !v.fieldName.startsWith("ni.VE") && !v.fieldName.startsWith("IO:null") && v.type !== "container");
       //if nonPrefixedVars contains any elements, we can immediately return
       if (nonPrefixedVars.length > 0) return nonPrefixedVars;
       //if we haven't returned yet, we must be dealing with Kingston. Filter out "IO:null" and return
-      return variablesArray.filter(v => !v.fieldName.startsWith("IO:null"));
+      return variablesArray.filter(v => !v.fieldName.startsWith("IO:null") && v.type !== "container");
     },
     collectVariableMetadata: (variablesArray, nameMap, targetWin) => {
       var variableDetails = [];
@@ -69,12 +70,15 @@ var SNKit = (() => {
             break;
           }
         }
-        varObj.label = targetWin.g_form.getLabelOf(varObj.Name);
+        
         varObj.mandatory = variablesArray[i].mandatory;
         varObj.reference = variablesArray[i].reference;
         varObj.scope = variablesArray[i].scope;
         varObj.tableName = variablesArray[i].tableName;
         varObj.type = variablesArray[i].type;
+        if(SNKit.nonLabeledVariables.indexOf(varObj.type) === -1){
+          varObj.label = targetWin.g_form.getLabelOf(varObj.Name);
+        }
         varObj.currentValue = targetWin.g_form.getValue(varObj.Name);
         if (varObj.reference != "null" && varObj.currentValue){
           varObj.displayValue = targetWin.g_form.getDisplayBox(varObj.Name).value;
