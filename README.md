@@ -11,19 +11,20 @@ SNKit is a devtools project dedicated to enabling quicker debugging of Service P
 ## Enabling SNKit
 To enable SNKit from devtools, open the SNKit panel at the top of the devtools window. From the controls tab, check the "Enable SNKit" checkbox.
 
-### ServiceNow Service Portal Widgets sidebar panel
+## ServiceNow Service Portal Widgets sidebar panel
 Once you've enabled SNKit, you'll have access to view all of the widget scope objects within the Service Portal Widgets sidebar panel. You can find the panel in the Elements tab. 
 
 ![service_portal_widgets](https://user-images.githubusercontent.com/22809154/31272378-6f4add44-aad6-11e7-9d71-699b494e967a.jpg)
 
-### Service Portal
+## Service Portal Tab
 The Service Portal tab points the user to the AngularJS scope data for each widget logged in the Service Portal Widgets sidebar. The Widget Controllers panel allows the user to have quick access to the AngularJS controller code for each widget. Here the user can debug and manipulate the widget controller script entirely from within devtools.
 
 ![widget_controllers](https://user-images.githubusercontent.com/22809154/31272812-fac4f912-aad7-11e7-9663-7d4c80409b72.jpg)
 
-### SNKit console API
+## SNKit console API
 The SNKit console API allows you to make changes to the widget AngularJS scopes and run client controller functions directly from the console.
 
+### snkit_api.widgetsToConsole()
 To create references in the console to all of the widget scopes on the page, from the JavaScript console run:
 
 ```javascript
@@ -44,7 +45,36 @@ Rerunning the server script from the console:
 snkit_api.$sc_shopping_cart.c.server.refresh()
 ```
 
-### Refreshing SNKit data
+### snkit_api.getGlideForm()
+To gain access to the g_form object and all of its functions, run the following command in the console:
+
+```javascript
+snkit_api.getGlideForm()
+```
+
+If you are on a Service Portal page that displays a form, you can then call the g_form object in the following way:
+
+```javascript
+snkit_api.g_form
+```
+
+Please see the documentation for the g_form object in Service Portal ![here](https://docs.servicenow.com/bundle/jakarta-servicenow-platform/page/build/service-portal/concept/unsupported_client_scripts.html#d1072115e130)
+
+Example usage of the g_form object. 
+
+Saving the form:
+
+```javascript
+snkit_api.g_form.save();
+```
+
+List all the field names on the form:
+
+```javascript
+snkit_api.g_form.getFieldNames();
+```
+
+## Refreshing SNKit data
 If you leave devtools open, you may need to refresh the data that you see in SNKit. To do this, just exit the tab or panel you are currently and return to that same tab or panel. SNKit is set to refresh everytime the panels are viewed.
 
 ### Adding SNKit to Chrome
