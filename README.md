@@ -77,8 +77,8 @@ snkit_api.g_form.getFieldNames();
 ## Refreshing SNKit data
 If you leave devtools open, you may need to refresh the data that you see in SNKit. To do this, just exit the tab or panel you are currently and return to that same tab or panel. SNKit is set to refresh everytime the panels are viewed.
 
-### Adding SNKit to Chrome
+## Adding SNKit to Chrome
 Instructions can be found [here](https://github.com/jtandy13/SNKit/wiki/Adding-SNKit-to-Chrome).
 
-### Help
+## Help
 The Help tab allows the user to log any observed bugs or issues with SNKit to the dedicated GitHub page for the project.
