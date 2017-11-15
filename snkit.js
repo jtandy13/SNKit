@@ -90,6 +90,9 @@ var snkit_api = (() => {
         snkit_api[scriptableName] = scope;
       });
     },
+    getGlideForm: () => {
+      snkit_api.g_form = angular.element("sp-variable-layout").scope().getGlideForm();
+    }
   }
 })();
 
