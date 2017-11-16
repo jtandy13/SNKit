@@ -59,6 +59,10 @@
     .nav-tabs>li.active>a {
       background-color: #fafafa;
     }
+    .center-heading {
+      display: flex;
+      justify-content: center;
+    }
   </style>
 </head>
 
@@ -81,44 +85,40 @@
     <div class="tab-pane" id="servicePortalTab" role="tabpanel">
       <div class="container-fluid" id="servicePortalContent" style="display: none">
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-3">
             <div class="row">
               <div class="col-md-12">
-                <div class="panel panel-default" id="controllerList">
+                <div class="panel panel-default" id="pageDetails">
                   <div class="panel-body">
-                    <h3><strong><em>Widget Scopes</em></strong></h3>
-                    <p>SNKit has logged all Service Portal widget AngularJS scope objects to the <em>Service Portal Widget Scopes</em>                      sidebar of the Elements panel.</p>
-                    <br>
-                    <p><strong>1. Open the Elements panel at the top of the devtools window.</strong></p>
-                    <img class="instructionImage" src="./resources/images/elementsPanel.jpg">
-                    <p><strong>2. From the sidebar panels, locate the <em>Service Portal Widget Scopes</em> panel. You may need to show all sidebar
-                      panels with the arrow button.</strong>
-                    </p>
-                    <img class="instructionImage" src="./resources/images/sidebarPanel.jpg">
-                    <p><strong>3. Expand each widget to view the scope data.</strong>
-                    </p>
-                    <img class="instructionImage" src="./resources/images/widgetList.jpg">
+                    <h3 class="center-heading"><strong><em>Widget Performance</em></strong></h3>
+                    <button type="button" class="btn btn-primary center-block">Display Performance Chart</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="panel panel-default" id="pageDetails">
+                  <div class="panel-body">
+                    <h3><strong><em>Service Portal Components</em></strong></h3>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="panel panel-default" id="pageDetails">
-                  <div class="panel-body">
-                    <h3><strong><em>Widget Controllers</em></strong></h3>
-                    <p>Click on any Service Portal widget listed below to view and/or edit the AngularJS controller from devtools.
-                      Saved changes to the controllers for testing and/or debugging will not change or affect the widget
-                      record in the ServiceNow instance.
-                    </p>
-                    <p>Change to <em>Inspect mode</em> to instead be taken to the top HTML element of the widget.</p>
-                    <div id="widgetsList"></div>
-                  </div>
-                </div>
+            <div class="panel panel-default" id="pageDetails">
+              <div class="panel-body">
+                <h3><strong><em>Widget Controllers</em></strong></h3>
+                <p>Click on any Service Portal widget listed below to view and/or edit the AngularJS controller from devtools.
+                  Saved changes to the controllers for testing and/or debugging will not change or affect the widget record
+                  in the ServiceNow instance.
+                </p>
+                <p>Change to <em>Inspect mode</em> to instead be taken to the top HTML element of the widget.</p>
+                <div id="widgetsList"></div>
               </div>
             </div>
+          </div>
+          <div class="col-md-3">
+            
           </div>
         </div>
       </div>
@@ -168,7 +168,29 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6"></div>
+          <div class="col-md-6">
+
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="panel panel-default" id="controllerList">
+                <div class="panel-body">
+                  <h3><strong><em>Widget Scopes</em></strong></h3>
+                  <p>SNKit has logged all Service Portal widget AngularJS scope objects to the <em>Service Portal Widget Scopes</em>                    sidebar of the Elements panel.</p>
+                  <br>
+                  <p><strong>1. Open the Elements panel at the top of the devtools window.</strong></p>
+                  <img class="instructionImage" src="./resources/images/elementsPanel.jpg">
+                  <p><strong>2. From the sidebar panels, locate the <em>Service Portal Widget Scopes</em> panel. You may need to show all sidebar
+                      panels with the arrow button.</strong>
+                  </p>
+                  <img class="instructionImage" src="./resources/images/sidebarPanel.jpg">
+                  <p><strong>3. Expand each widget to view the scope data.</strong>
+                  </p>
+                  <img class="instructionImage" src="./resources/images/widgetList.jpg">
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
