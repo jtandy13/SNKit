@@ -161,6 +161,19 @@ var snkitUtil = (() => {
         tabId = chrome.devtools.inspectedWindow.tabId;
       }
       return tabId;
+    },
+    getHostName: () => {
+      // Create a port for communication with the event page
+      var port = chrome.runtime.connect({ name: "devtools-page" });
+      return new Promise((resolve, reject) => {
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "getHostName", cmdType: "page", data: {} });
+        port.onMessage.addListener((data) => {
+          if (data.type == "EVENT_PAGE" && data.cmd == "getHostName") {
+            port.disconnect();
+            resolve(data.content);
+          }
+        });
+      });
     }
   }
 })();
@@ -220,15 +233,14 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
         })
       }
 
-      function renderServicePortalTab() {
-        widgetUtil.getWidgetDetails().then((widgets) => {
-          if (widgets.length > 0) {
-            var widgetHTML = "";
-            var targetEl = _spPanelWindow.document.getElementById("widgetsList");
+      function renderServicePortalTab(widgets) {
+        if (widgets.length > 0) {
+          var widgetHTML = "";
+          var targetEl = _spPanelWindow.document.getElementById("widgetsList");
 
-            widgets.forEach((obj, i) => {
-              if (i == 0) {
-                widgetHTML += `
+          widgets.forEach((obj, i) => {
+            if (i == 0) {
+              widgetHTML += `
                   <div class="row">
                     <div class="col-md-6 widgetList">
                       <div class="widgetBox ${obj.className}" id="${obj.id}"
@@ -243,8 +255,8 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
                       </label>
                     </div>
                   </div>`
-              } else {
-                widgetHTML += `
+            } else {
+              widgetHTML += `
                 <div class="row">
                   <div class="col-md-6 widgetList">
                     <div class="widgetBox ${obj.className}" id="${obj.id}"
@@ -254,15 +266,59 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
                   </div>
                   <div class="col-md-6"></div>
                 </div>`
-              }
-            });
-            targetEl.innerHTML = widgetHTML;
-            applyWidgetListeners();
-            var servicePortalContent = _spPanelWindow.document.getElementById("servicePortalContent")
-            servicePortalContent.style.display = "block";
+            }
+          });
+          targetEl.innerHTML = widgetHTML;
+          applyWidgetListeners();
+          var servicePortalContent = _spPanelWindow.document.getElementById("servicePortalContent")
+          servicePortalContent.style.display = "block";
+        }
+      }
+
+      function renderComponentLinks(widgets){
+        var _widgets = widgets;
+        var componentsLinkHTML = "";
+        var targetEl = _spPanelWindow.document.getElementById("conponentLinksList");
+        snkitUtil.getHostName().then((hostname) => {
+          componentsLinkHTML += `
+            <div class="col-md-12 componentList">
+              <em><a class="componentLink" data-urlTarget="https://${hostname}/sp_portal.do?sys_id=${_widgets[0].portalId}">Portal</a></em>
+            </div>
+            <div class="col-md-12 componentList">
+              <em><a class="componentLink" data-urlTarget="https://${hostname}/sp_page.do?sys_id=${_widgets[0].pageId}">Page</a></em>
+            </div>
+            <div class="col-md-12 componentList">
+              <em><a class="componentLink" data-urlTarget="https://${hostname}/sp_theme.do?sys_id=${_widgets[0].themeId}">Theme</a></em>
+            </div>
+            `;
+          if(widgets[0].headerId){
+            componentsLinkHTML += `
+              <div class="col-md-12 componentList">
+                <em><a class="componentLink" data-urlTarget="https://${hostname}/sp_header_footer.do?sys_id=${_widgets[0].headerId}">Header</a></em>
+              </div>
+            `;
           }
+          if(widgets[0].footerId){
+            componentsLinkHTML += `
+              <div class="col-md-12 componentList">
+                <em><a class="componentLink" data-urlTarget="https://${hostname}/sp_header_footer.do?sys_id=${_widgets[0].footerId}">Footer</a></em>
+              </div>
+            `;
+          }
+          targetEl.innerHTML = componentsLinkHTML;
+          applyComponentLinkListeners();
         });
       }
+
+      function applyComponentLinkListeners() {
+        var componentLinkArray = _spPanelWindow.document.querySelectorAll(".componentLink");
+        componentLinkArray.forEach((cLink) => {
+          cLink.addEventListener("click", (event) => {
+            snkitUtil.openInNewTab(event.target.dataset.urltarget);
+          });
+        });
+      }
+
       /**
        * Bootstrap tab changes are difficult to react to without JQuery,
        * so the MutationObserver class will be used instead of addEventListener.
@@ -270,8 +326,12 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
       var spTabObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           //Once the Service Portal tab becomes active, take action
-          if (mutation.target.className == "tab-pane active")
-            renderServicePortalTab();
+          if (mutation.target.className == "tab-pane active"){
+            widgetUtil.getWidgetDetails().then((widgets) => {
+              renderServicePortalTab(widgets);
+              renderComponentLinks(widgets);
+            });
+          }
         });
       });
 

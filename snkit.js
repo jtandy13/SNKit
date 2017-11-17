@@ -13,6 +13,11 @@ var SNKit = (() => {
         detailObj.id = spWidgets[i].id
         detailObj.className = spWidgets[i].classList.item(0);
         detailObj.identifier = "class"
+        detailObj.portalId = thisScope.portal.sys_id;
+        detailObj.themeId = thisScope.theme.sys_id;
+        detailObj.pageId = thisScope.page.sys_id;
+        if(thisScope.theme.header.sys_id) detailObj.headerId = thisScope.theme.header.sys_id;
+        if(thisScope.theme.footer.sys_id) detailObj.footerId = thisScope.theme.footer.sys_id;
         details.push(detailObj);
       })
       callback(details);
@@ -63,6 +68,9 @@ var SNKit = (() => {
     isServicePortalPage: (callback) => {
       callback(window.NOW.hasOwnProperty("sp"));
     },
+    getHostName: (callback) => {
+      callback(window.location.hostname);
+    }
   }
 })();
 
@@ -106,6 +114,11 @@ window.addEventListener("snkitRequest", function(event) {
     });
   } else if (cmd === "isServicePortalPage"){
     SNKit.isServicePortalPage((data) => {
+      // send the data back to the content script
+      window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
+    });
+  } else if (cmd === "getHostName"){
+    SNKit.getHostName((data) => {
       // send the data back to the content script
       window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
     });

@@ -43,6 +43,16 @@
       cursor: pointer;
     }
 
+    .componentLink {
+      cursor: pointer;
+      color: #881391;
+    }
+
+    .componentList {
+      padding-top: 5px;
+      padding-left: 20px;
+    }
+
     .panel {
       background-color: #fafafa;
       border-color: #337ab7
@@ -58,10 +68,6 @@
 
     .nav-tabs>li.active>a {
       background-color: #fafafa;
-    }
-    .center-heading {
-      display: flex;
-      justify-content: center;
     }
   </style>
 </head>
@@ -85,22 +91,14 @@
     <div class="tab-pane" id="servicePortalTab" role="tabpanel">
       <div class="container-fluid" id="servicePortalContent" style="display: none">
         <div class="row">
-          <div class="col-md-3">
+          <div class="col-md-2">
             <div class="row">
               <div class="col-md-12">
-                <div class="panel panel-default" id="pageDetails">
-                  <div class="panel-body">
-                    <h3 class="center-heading"><strong><em>Widget Performance</em></strong></h3>
-                    <button type="button" class="btn btn-primary center-block">Display Performance Chart</button>
-                  </div>
-                </div>
+                <h4><strong><em>Service Portal Components</em></strong></h4>
+                <div class="row" id="conponentLinksList"></div>
               </div>
-              <div class="col-md-12">
-                <div class="panel panel-default" id="pageDetails">
-                  <div class="panel-body">
-                    <h3><strong><em>Service Portal Components</em></strong></h3>
-                  </div>
-                </div>
+              <div class="col-md-12" style="padding-top:15px">
+                <button type="button" class="btn btn-primary">Display Performance Chart</button>
               </div>
             </div>
           </div>
@@ -117,8 +115,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-3">
-            
+          <div class="col-md-4">
           </div>
         </div>
       </div>
