@@ -45,9 +45,8 @@
 
     .componentLink {
       cursor: pointer;
-      color: #881391;
     }
-
+    
     .componentList {
       padding-top: 5px;
       padding-left: 20px;
@@ -56,6 +55,10 @@
     .panel {
       background-color: #fafafa;
       border-color: #337ab7
+    }
+
+    .customPanelBody{
+      background-color: #f5f5f5
     }
 
     body {
@@ -81,6 +84,7 @@
           <ul class="nav nav-tabs">
             <li id="spTabListItem" style="display: none"><a data-toggle="tab" href="#servicePortalTab">Service Portal</a></li>
             <li class="active"><a data-toggle="tab" href="#controls">Controls</a></li>
+            <li id="perCharTabListItem" style="display: none"><a data-toggle="tab" href="#perChartTab">Performance Chart</a></li>
             <li><a data-toggle="tab" href="#help">Help</a></li>
           </ul>
         </div>
@@ -94,11 +98,17 @@
           <div class="col-md-2">
             <div class="row">
               <div class="col-md-12">
-                <h4><strong><em>Service Portal Components</em></strong></h4>
-                <div class="row" id="conponentLinksList"></div>
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4><strong><em>Service Portal Components</em></strong></h4>
+                  </div>
+                  <div class="panel-body customPanelBody">
+                    <div class="row" id="conponentLinksList"></div>
+                  </div>
+                </div>
               </div>
               <div class="col-md-12" style="padding-top:15px">
-                <button type="button" class="btn btn-primary">Display Performance Chart</button>
+                <button type="button" id="performanceChartBtn" class="btn btn-info center-block">Display Performance Chart</button>
               </div>
             </div>
           </div>
@@ -121,6 +131,19 @@
       </div>
     </div>
     <!-- End Service Portal -->
+    <!-- Begin Performance Chart -->
+    <div class="tab-pane" id="perChartTab" role="tabpanel">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <div style="width:500px; height:500px;">
+              <canvas id="performanceChart" width="1" height="1"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Performance Chart -->
     <!-- Begin Controls -->
     <div class="tab-pane active" id="controls" role="tabpanel">
       <div class="container-fluid">
@@ -166,27 +189,6 @@
             </div>
           </div>
           <div class="col-md-6">
-
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="panel panel-default" id="controllerList">
-                <div class="panel-body">
-                  <h3><strong><em>Widget Scopes</em></strong></h3>
-                  <p>SNKit has logged all Service Portal widget AngularJS scope objects to the <em>Service Portal Widget Scopes</em>                    sidebar of the Elements panel.</p>
-                  <br>
-                  <p><strong>1. Open the Elements panel at the top of the devtools window.</strong></p>
-                  <img class="instructionImage" src="./resources/images/elementsPanel.jpg">
-                  <p><strong>2. From the sidebar panels, locate the <em>Service Portal Widget Scopes</em> panel. You may need to show all sidebar
-                      panels with the arrow button.</strong>
-                  </p>
-                  <img class="instructionImage" src="./resources/images/sidebarPanel.jpg">
-                  <p><strong>3. Expand each widget to view the scope data.</strong>
-                  </p>
-                  <img class="instructionImage" src="./resources/images/widgetList.jpg">
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -196,6 +198,7 @@
 
   <script src="./resources/jquery-3.2.1.min.js"></script>
   <script src="./resources/bootstrap.min.js"></script>
+  <script src="./resources/Chart.js"></script>
 </body>
 
 </html>

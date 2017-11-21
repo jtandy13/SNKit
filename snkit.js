@@ -16,6 +16,7 @@ var SNKit = (() => {
         detailObj.portalId = thisScope.portal.sys_id;
         detailObj.themeId = thisScope.theme.sys_id;
         detailObj.pageId = thisScope.page.sys_id;
+        detailObj.serverTime = thisScope.widget._server_time;
         if(thisScope.theme.header.sys_id) detailObj.headerId = thisScope.theme.header.sys_id;
         if(thisScope.theme.footer.sys_id) detailObj.footerId = thisScope.theme.footer.sys_id;
         details.push(detailObj);
@@ -64,6 +65,35 @@ var SNKit = (() => {
       }
       if(_callback) _callback(widgetScopes);
       else return widgetScopes;
+    },
+    timeServer: (scope) => {
+      return new Promise((resolve, reject) => {
+        var timing;
+        var start = Date.now();
+        //console.log(scope.widget.name + " started @" + Date.now());
+        scope.server.refresh().then(() => {
+          var end = Date.now();
+          //console.log(scope.widget.name + " finished @" + Date.now());
+          timing = end - start;
+          resolve({timing: timing, name: scope.widget.name});
+        });
+      });
+    },
+    // Promises need to run in a synchronous chain, this is not happening yet.
+    getServerTimings: (callback) => {
+      var scopes = SNKit.getWidgetScopes();
+      var timingResults = [];
+      var chain = Promise.resolve();
+      scopes.forEach((scope, i, a) => {
+        chain = chain.then(() => 
+          SNKit.timeServer(scope)).then((result) => { 
+            timingResults.push(result) 
+            // if this is the last element in the array, then send the information back
+            if(i == (a.length - 1)){
+              callback(timingResults);
+            }
+          });
+      });
     },
     isServicePortalPage: (callback) => {
       callback(window.NOW.hasOwnProperty("sp"));
@@ -119,6 +149,11 @@ window.addEventListener("snkitRequest", function(event) {
     });
   } else if (cmd === "getHostName"){
     SNKit.getHostName((data) => {
+      // send the data back to the content script
+      window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
+    });
+  } else if (cmd === "getServerTimings"){
+    SNKit.getServerTimings((data) => {
       // send the data back to the content script
       window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
     });

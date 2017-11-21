@@ -91,6 +91,20 @@ var widgetUtil = (() => {
         scriptName = widgetIdentityObj.idNum + ".js";
       }
       chrome.devtools.panels.openResource(scriptName); 
+    },
+    getServerTimings: () => {
+      // Create a port for communication with the event page
+      var port = chrome.runtime.connect({ name: "devtools-page" });
+      return new Promise((resolve, reject) => {
+        port.postMessage({ tabId: snkitUtil.getTabId(), text: "getServerTimings", cmdType: "page", data: {} });
+        port.onMessage.addListener((data) => {
+          if(data.type == "EVENT_PAGE" && data.cmd == "getServerTimings"){
+            port.disconnect();
+            if(data.content) resolve(data.content);
+            else reject();
+          }
+        });
+      });
     }
   }
 })();
@@ -353,17 +367,68 @@ chrome.devtools.panels.create("SNKit", "", "snkit.html",
           sidebarUtil.renderWidgetSidebarPanel();
           var spTabTargetNodes = _spPanelWindow.document.querySelector("#spTabListItem");
           spTabTargetNodes.style.display = "block";
-          var refreshBtn = _spPanelWindow.document.querySelector("#refreshSNKitBtn");
-          refreshBtn.classList.remove("disabled");
         }
       }, false);
+
+      /**
+       * The basic premise of the performance timing is to call Date.now();, call the promise, 
+       * in the then function call Date.now() again and log the difference.
+       */
+
+      // add event listener to the performance chart button
+      var performanceChartBtn = _spPanelWindow.document.getElementById("performanceChartBtn");
+      var perCh;
+      performanceChartBtn.addEventListener("click", () => {
+        var ctx = _spPanelWindow.document.getElementById("performanceChart").getContext("2d");
+        var perCharTabListItem = _spPanelWindow.document.querySelector("#perCharTabListItem");
+        perCharTabListItem.style.display = "none";
+        widgetUtil.getServerTimings().then((results) => {
+          if(perCh) {
+            perCh.destroy();
+            perCharTabListItem.style.display = "none";
+            console.log("perCh exists and was destroyed");
+          }
+          var serverTimes = [];
+          var widgetNames = [];
+          results.sort((a, b) => {return b.timing - a.timing});
+          var topTenWidgets = results.slice(0, (results.length >= 10 ? 10 : results.length));
+          topTenWidgets.forEach((widget) => {
+            serverTimes.push(widget.timing);
+            widgetNames.push(widget.name);
+          });
+          var config = {
+            type: "doughnut",
+            data: {
+              datasets: [{
+                data: serverTimes,
+                backgroundColor: ["#a8e6cf","#dcedc1","#ffd3b6","#ffaaa5","#ff8b94","#bfb5b2","#83adb5","#c7bbc9","#2e4045","#5e3c58"],
+              }],
+              labels: widgetNames
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: "bottom"
+              },
+              title: {
+                display: true,
+                text: "Longest Running Server Scripts"
+              }
+            }
+          };
+          var _perCh = new Chart(ctx, config);
+          // keep a reference to the chart so that it can be removed if necessary
+          perCh = _perCh;
+          // Once the chart is created, show the performance chart tab
+          perCharTabListItem.style.display = "block";
+        });
+      });
 
       // add event listeners to the create issue button
       var createIssueBtn = _spPanelWindow.document.getElementById("createIssue");
       createIssueBtn.addEventListener("click", () => {
         snkitUtil.openInNewTab("https://github.com/jtandy13/SNKit/issues/new");
       }, false);
-
     }).catch((e) => {
       console.log(e);
     });
