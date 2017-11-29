@@ -17,9 +17,18 @@ Once you've enabled SNKit, you'll have access to view all of the widget scope ob
 ![service_portal_widgets](https://user-images.githubusercontent.com/22809154/31272378-6f4add44-aad6-11e7-9d71-699b494e967a.jpg)
 
 ## Service Portal Tab
+### Widget Controllers panel
 The Service Portal tab points the user to the AngularJS scope data for each widget logged in the Service Portal Widgets sidebar. The Widget Controllers panel allows the user to have quick access to the AngularJS controller code for each widget. Here the user can debug and manipulate the widget controller script entirely from within devtools.
 
 ![widget_controllers](https://user-images.githubusercontent.com/22809154/31272812-fac4f912-aad7-11e7-9663-7d4c80409b72.jpg)
+
+### Service Portal Components panel
+The Service Portal Components panel provides the user with quick links to the components used to build the currently viewed portal. All links open in a new browser tab.
+
+### Run a performance chart to check widget load times
+Pressing the "Display Performance Chart" will reload all of the widgets on the page while keeping track of the load times. Once all widgets have reloaded, the Performance Chart tab will display a graph showing you which widgets are taking the most time to load.
+
+![performance_chart](https://user-images.githubusercontent.com/22809154/33367415-a1dc6688-d542-11e7-8617-42fdd18f4aa4.png)
 
 ## SNKit console API
 The SNKit console API allows you to make changes to the widget AngularJS scopes and run client controller functions directly from the console.
