@@ -26,7 +26,7 @@ The Service Portal tab points the user to the AngularJS scope data for each widg
 The Service Portal Components panel provides the user with quick links to the components used to build the currently viewed portal. All links open in a new browser tab.
 
 ### Run a performance chart to check widget load times
-Pressing the "Display Performance Chart" will reload all of the widgets on the page while keeping track of the load times. Once all widgets have reloaded, the Performance Chart tab will display a graph showing you which widgets are taking the most time to load.
+Pressing the "Display Performance Chart" will reload all of the widgets on the page while keeping track of the load times. Once all widgets have reloaded, the Performance Chart tab will display a graph showing you which widgets are taking the most time to load. Times are listed in milliseconds.
 
 ![performance_chart](https://user-images.githubusercontent.com/22809154/33367415-a1dc6688-d542-11e7-8617-42fdd18f4aa4.png)
 
