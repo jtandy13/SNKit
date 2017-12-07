@@ -4,6 +4,7 @@
   "description": "Chrome Developer Tools extension for ServiceNow.",
   "devtools_page": "devtools.html",
   "manifest_version": 2,
+  "short_name": "Chrome Developer Tools extension for ServiceNow",
   "permissions": [
     "tabs"
   ],
