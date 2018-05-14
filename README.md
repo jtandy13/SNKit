@@ -55,7 +55,7 @@ snkit_api.$sc_shopping_cart.c.server.refresh()
 ```
 
 ### snkit_api.getService(String serviceName)
-The getService function gives you the ability to test and/or demonstrate any AngularJS service from the browser JavaScript console. The function takes one paramter "serviceName" which is the name of AngularJS Service (ServiceNow's "spUtil" and "spModal" services can also be accessed) that you need to access.
+The getService function gives you the ability to test and/or demonstrate any AngularJS service from the browser JavaScript console. The function takes one paramter "serviceName" which is the name of the AngularJS Service that you need to access. ServiceNow's "spUtil" and "spModal" services can also be accessed.
 
 Examples:
 
