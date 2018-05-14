@@ -130,6 +130,9 @@ var snkit_api = (() => {
     },
     getGlideForm: () => {
       snkit_api.g_form = angular.element("sp-variable-layout").scope().getGlideForm();
+    },
+    getService: (serviceName) => {
+      snkit_api[serviceName] = angular.element(document.querySelector("[ng-app]")).injector().get(serviceName);
     }
   }
 })();

@@ -54,6 +54,26 @@ Rerunning the server script from the console:
 snkit_api.$sc_shopping_cart.c.server.refresh()
 ```
 
+### snkit_api.getService(String serviceName)
+The getService function gives you the ability to test and/or demonstrate any AngularJS service from the browser JavaScript console. The function takes one paramter "serviceName" which is the name of AngularJS Service (ServiceNow's "spUtil" and "spModal" services can also be accessed) that you need to access.
+
+Examples:
+
+Testing the "spUtil" service from the console:
+```javascript
+snkit_api.getService('spModal');
+snkit_api.spModal.prompt('Isn\'t SNKit great?')
+  .then(function(response){
+    console.log(response);
+  });
+```
+
+Testing the AngularJS "$location" service from the console:
+```javascript
+snkit_api.getService('$location');
+ssnkit_api.$location.url('/sp?id=index');
+```
+
 ### snkit_api.getGlideForm()
 To gain access to the g_form object and all of its functions, run the following command in the console:
 
