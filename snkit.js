@@ -17,8 +17,8 @@ var SNKit = (() => {
         detailObj.themeId = thisScope.theme.sys_id;
         detailObj.pageId = thisScope.page.sys_id;
         detailObj.serverTime = thisScope.widget._server_time;
-        if(thisScope.theme.header.sys_id) detailObj.headerId = thisScope.theme.header.sys_id;
-        if(thisScope.theme.footer.sys_id) detailObj.footerId = thisScope.theme.footer.sys_id;
+        if(thisScope.theme.header && thisScope.theme.header.sys_id) detailObj.headerId = thisScope.theme.header.sys_id;
+        if(thisScope.theme.footer && thisScope.theme.footer.sys_id) detailObj.footerId = thisScope.theme.footer.sys_id;
         details.push(detailObj);
       })
       callback(details);
