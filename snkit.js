@@ -78,7 +78,7 @@ var SNKit = (() => {
           timing = end - start;
 
           //record timing in widget scope
-          scope.load_time = timing;
+          scope.snkit_load_time_ms = timing;
 
           resolve({timing: timing, name: scope.widget.name});
         });
