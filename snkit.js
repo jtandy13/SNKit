@@ -67,6 +67,7 @@ var SNKit = (() => {
       else return widgetScopes;
     },
     timeServer: (scope) => {
+
       return new Promise((resolve, reject) => {
         var timing;
         var start = Date.now();
@@ -75,6 +76,10 @@ var SNKit = (() => {
           var end = Date.now();
           //console.log(scope.widget.name + " finished @" + Date.now());
           timing = end - start;
+
+          //record timing in widget scope
+          scope.snkit_load_time_ms = timing;
+
           resolve({timing: timing, name: scope.widget.name});
         });
       });
@@ -157,6 +162,10 @@ window.addEventListener("snkitRequest", function(event) {
     });
   } else if (cmd === "getServerTimings"){
     SNKit.getServerTimings((data) => {
+
+      //lets log the performance data into a table in the console
+      console.table(data);
+
       // send the data back to the content script
       window.postMessage({ type: "from_page", text: data, cmd: cmd }, "*");
     });
