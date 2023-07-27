@@ -1,6 +1,6 @@
 // inject script into page
 var injection = document.createElement('script');
-injection.src = chrome.extension.getURL('snkit.js');
+injection.src = chrome.runtime.getURL('snkit.js');
 (document.head||document.documentElement).appendChild(injection);
 injection.onload = () => {
   injection.parentNode.removeChild(injection);
@@ -20,14 +20,14 @@ function relayResponse(sendResponse) {
     // We only accept messages from ourselves
     if (event.source != window)
       return;
-    
+
     if (event.data.type && (event.data.type == "from_page")) {
       _response( { data: event.data.text, cmd: event.data.cmd });
     }
   }, false);
 }
 function highlightWidget(widgetIdentityObj) {
-  if(widgetIdentityObj.id) 
+  if(widgetIdentityObj.id)
     var target = document.getElementById(widgetIdentityObj.id);
   else
     var target = document.querySelector("." + widgetIdentityObj.class);
@@ -36,7 +36,7 @@ function highlightWidget(widgetIdentityObj) {
 }
 
 function removeWidgetHighlight(widgetIdentityObj) {
-  if(widgetIdentityObj.id) 
+  if(widgetIdentityObj.id)
     var target = document.getElementById(widgetIdentityObj.id);
   else
     var target = document.querySelector("." + widgetIdentityObj.class);
@@ -50,7 +50,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type == "EVENT_PAGE" && message.cmdType == "page") {
       sendCmd(message.text, message.data);
       relayResponse(sendResponse);
-      // According to chrome API documentation this allows for the 
+      // According to chrome API documentation this allows for the
       // message channel to stay open for the async callback sendResponse
       return true;
     } else if (message.type == "EVENT_PAGE" && message.cmdType == "content_script") {
