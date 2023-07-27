@@ -28,12 +28,12 @@
     }
   ],
   "background": {
-    "scripts": [
-      "eventPage.js"
-    ],
-    "persistent": false
+    "service_worker": "eventPage.js"
   },
   "web_accessible_resources": [
-    "snkit.js"
+    {
+      "resources": [  "snkit.js" ],
+      "matches": [ "<all_urls>" ]
+    }
   ]
 }
