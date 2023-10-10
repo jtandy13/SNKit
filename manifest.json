@@ -1,9 +1,9 @@
 {
   "name": "SNKit",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Chrome Developer Tools extension for ServiceNow.",
   "devtools_page": "devtools.html",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "short_name": "Chrome Developer Tools extension for ServiceNow",
   "permissions": [
     "tabs"
@@ -11,7 +11,13 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.service-now.com/*"
+        "<all_urls>"
+      ],
+      "exclude_matches": [
+        "*://*/*?XML*",
+        "*://*/*&XML*",
+        "*://*/*?WSDL*",
+        "*://*/*&WSDL*"
       ],
       "js": [
         "content_script.js"
@@ -22,12 +28,12 @@
     }
   ],
   "background": {
-    "scripts": [
-      "eventPage.js"
-    ],
-    "persistent": false
+    "service_worker": "eventPage.js"
   },
   "web_accessible_resources": [
-    "snkit.js"
+    {
+      "resources": [  "snkit.js" ],
+      "matches": [ "<all_urls>" ]
+    }
   ]
 }
